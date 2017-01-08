@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Simulation
         float satiation = 24 * 21;
         public const int sleephour = 22;
         public const int wakehour = 6;
-        const int longestdist = 10;
+        const int longestdist = 6;
         float slowness = 1f;
         int speed = 8;
         float movementfoodcost = 0.5f;
@@ -23,7 +24,7 @@ namespace Simulation
         List<Tuple<int, int>> places = new List<Tuple<int, int>>();
         static List<Tuple<int, int>> doors = new List<Tuple<int, int>>();
         public static int numcolonists;
-        Vector2 dest;
+        Tuple<int, int> dest;
         bool atdoor = false;
         public Colonist (Vector2 pos)
         {
@@ -36,6 +37,8 @@ namespace Simulation
             Timer t = new Timer(Action, 1f, enabled);
             Timer t1 = new Timer(Weaken, 1f, enabled);
             UpdateDescription();
+            var post = postotuple();
+            dest = new Tuple<int, int>(post.Item1 - longestdist, post.Item2 - longestdist);
         }
 
         public void UpdateDescription()
@@ -62,10 +65,10 @@ namespace Simulation
         void FindAllCrops ()
         {
             places = new List<Tuple<int, int>>();
-            int lowerx = ((int)pos.X / Simulation.tilesize) - (int)longestdist;
-            int higherx = ((int)pos.X / Simulation.tilesize) + (int)longestdist;
-            int lowery = ((int)pos.Y / Simulation.tilesize) - (int)longestdist;
-            int highery = ((int)pos.Y / Simulation.tilesize) + (int)longestdist;
+            int lowerx = ((int)pos.X / Simulation.tilesize) - longestdist;
+            int higherx = ((int)pos.X / Simulation.tilesize) + longestdist;
+            int lowery = ((int)pos.Y / Simulation.tilesize) - longestdist;
+            int highery = ((int)pos.Y / Simulation.tilesize) + longestdist;
             for (int x = lowerx; x < higherx; x++)
             {
                 for (int y = lowery; y < highery; y++)
@@ -98,6 +101,8 @@ namespace Simulation
                 Sleep();
             }*/
             var post = postotuple();
+            if (post.Equals(dest))
+                return;
             int[,,] tiles = Simulation.inst.area.tiles;
             int xlower = post.Item1 - longestdist;
             int ylower = post.Item2 - longestdist;
@@ -117,18 +122,23 @@ namespace Simulation
                     map[x, y] = notwater && notriver && notwall && notstone;
                 }
             }
-            if (!map[0, 0])
+            var localdest = new Tuple<int, int>(-post.Item1 + longestdist + dest.Item1, -post.Item2 + longestdist + dest.Item2);
+            if (!map[localdest.Item1, localdest.Item2])
             {
                 Console.WriteLine("Bad coordinate for pathfinding.");
                 return;
             }
-                
-            AStar a = new AStar(new Tuple<int, int>(longestdist, longestdist), new Tuple<int, int>(0, 0), map);
+            
+            AStar a = new AStar(new Tuple<int, int>(longestdist, longestdist), localdest, map);
             var path = a.CalculatePath();
-            var dest = path.Last();
-            dest = new Tuple<int, int>(dest.Item1 + post.Item1 - longestdist, dest.Item2 + post.Item2 - longestdist);
-            Vector2 dir = new Vector2(dest.Item1 * Simulation.tilesize, dest.Item1 * Simulation.tilesize);
-            Move(dir);
+            var nearestdest = path.First();
+            nearestdest = new Tuple<int, int>(nearestdest.Item1 + post.Item1 - longestdist, nearestdest.Item2 + post.Item2 - longestdist);
+            
+            Tuple<int, int> d = new Tuple<int, int>(nearestdest.Item1 - post.Item1, nearestdest.Item2 - post.Item2);
+            Assert.IsTrue(Math.Abs(d.Item1) + Math.Abs(d.Item2) <= 1);
+            Console.WriteLine(d.ToString());
+            Vector2 nd = new Vector2(nearestdest.Item1 * Simulation.tilesize, nearestdest.Item2 * Simulation.tilesize);
+            Move(nd);
             
             Timer t = new Timer(Action, slowness, enabled);
                 
@@ -142,10 +152,10 @@ namespace Simulation
             var distance = Vector2.Distance(new Vector2(crop.Item1, crop.Item2), pos / Simulation.tilesize);
             if (distance < longestdist)
             {
-                dest = new Vector2(crop.Item1 * Simulation.tilesize, crop.Item2 * Simulation.tilesize);
+                //dest = new Vector2(crop.Item1 * Simulation.tilesize, crop.Item2 * Simulation.tilesize);
             }
 
-            Move(dest);
+            //Move(dest);
 
             var posint = postotuple();
             
@@ -169,6 +179,7 @@ namespace Simulation
             Area area = Simulation.inst.area;
             Vector2 dir = (dest - pos);
             dir.Normalize();
+
             if (float.IsNaN(dir.X) || float.IsNaN(dir.Y))
             {
                 dir = Vector2.Zero;

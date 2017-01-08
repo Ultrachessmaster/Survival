@@ -10,16 +10,13 @@ namespace Simulation
 {
     class TimeCycle
     {
-        public static int UpdatePerFrame { get { return updatesperframe; } }
-        public static int TotalHours { get { return (int)Math.Floor(minutes / 60d); } }
-        public static int Hours { get { return (int)Math.Floor(minutes / 60d) % 24; } }
-        public static int Minutes { get { return minutes; } }
-        static int minutes = 0;
-        static int updatesperframe = 1;
+        public static int TotalHours { get { return (int)Math.Floor(halfminutes / 120d); } }
+        public static int Hours { get { return (int)Math.Floor(halfminutes / 120d) % 24; } }
+        public static int Minutes { get { return halfminutes / 2; } }
+        static int halfminutes = 0;
         public void Update ()
         {
-            updatesperframe = (Mouse.GetState().ScrollWheelValue / 120) + 1;
-            minutes++;
+            halfminutes++;
         }
     }
 }

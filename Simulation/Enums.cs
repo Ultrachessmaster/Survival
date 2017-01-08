@@ -13,4 +13,11 @@ namespace Simulation
         COLONIST,
         BUILDING,
     }
+
+    public enum TextureAtlas
+    {
+        SPRITES,
+        TILES,
+        ANIMALS
+    }
 }

@@ -13,20 +13,12 @@ namespace Simulation
         public static bool IsKeyPressed (Keys key) {
             KeyboardState ks = Keyboard.GetState();
 
-            /*if (!keys.ContainsKey(key))
-                inputs[key] = la;*/
-
             if (ks.IsKeyUp(key))
             {
                 keys.Set(key, false);
             }
 
             if (ks.IsKeyDown(key)) {
-                /*if (!keys[key])
-                {
-                    keys[key] = true;
-                    return true;
-                }*/
                 return keys.Access(key);
             }
             
@@ -57,6 +49,17 @@ namespace Simulation
 
             return false;
 
+        }
+
+        public static int MouseTileX()
+        {
+            var mstate = Mouse.GetState();
+            return Math.Max(((mstate.X / Simulation.pxlratio) + Camera.X) / Simulation.tilesize, 0);
+        }
+        public static int MouseTileY()
+        {
+            var mstate = Mouse.GetState();
+            return Math.Max(((mstate.Y / Simulation.pxlratio) + Camera.Y) / Simulation.tilesize, 0);
         }
     }
 }

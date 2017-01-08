@@ -22,13 +22,19 @@ namespace Simulation
         public static List<Timer> Timers = new List<Timer>();
         public static int tilesize = 8;
         public static int pxlratio = 4;
+        int updatesperframe = 1;
+        int initscrollwheel = 0;
         public static int windowsize { get; internal set; }
         private Texture2D tileatlas;
         private Texture2D spriteatlas;
+        private Texture2D animalatlas;
+        private Texture2D textbox;
         public static Simulation inst;
 
         public static ContentManager CM { get; internal set; }
         public static GraphicsDevice GD { get; internal set; }
+
+        public static int seed = (int)DateTime.Now.Ticks;
 
         public Simulation()
         {
@@ -55,9 +61,15 @@ namespace Simulation
             // TODO: Add your initialization logic here
             IsMouseVisible = true;
             base.Initialize();
+
+            area = new Area();
             var size = new Vector3(512, 512, 1);
             var map = Generation.Generate(size);
-            area = new Area(map);
+            area.SetMap(map);
+            //area.SetMap(new int[(int)size.X,(int)size.Y,(int)size.Y]);
+            //AddEntity(new Colonist(new Vector2(5 * tilesize, 5 * tilesize)));
+            area.entities.AddRange(Generation.GenerateEntities(map));
+            
             crops = new Crops(area);
         }
 
@@ -71,6 +83,8 @@ namespace Simulation
             spriteBatch = new SpriteBatch(GraphicsDevice);
             tileatlas = Content.Load<Texture2D>("texturemap");
             spriteatlas = Content.Load<Texture2D>("spritemap");
+            animalatlas = Content.Load<Texture2D>("animalmap");
+            textbox = Content.Load<Texture2D>("textbox");
             font = Content.Load<SpriteFont>("Font");
             GD = GraphicsDevice;
             we = new WorldEditor(windowsize);
@@ -96,7 +110,12 @@ namespace Simulation
 
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //    Exit();
-            for(int i = 0; i < TimeCycle.UpdatePerFrame; i++)
+            var state = Mouse.GetState();
+            updatesperframe += ( (state.ScrollWheelValue - initscrollwheel) / 120);
+            updatesperframe = Math.Max(updatesperframe, 0);
+            updatesperframe = Math.Min(updatesperframe, 100);
+            initscrollwheel = state.ScrollWheelValue;
+            for(int i = 0; i < updatesperframe; i++)
             {
                 SimUpd(gameTime);
             }
@@ -116,12 +135,25 @@ namespace Simulation
                 var tim = Timers[i];
                 tim.CheckTime();
             }
-            for (int i = 0; i < area.entities.Count; i++)
+            int col = 0;
+            for (int i = area.entities.Count - 1; i >= 0; i--)
             {
                 var ent = area.entities[i];
-                if (ent.Update != null)
+                if (ent.Update != null && ent.enabled.Value)
                     ent.Update.Invoke(gameTime);
+                else if (!ent.enabled.Value)
+                {
+                    area.entities.RemoveAt(i);
+                }
+                if (ent.Tag == "Colonist")
+                    col++;
             }
+            Colonist.numcolonists = col;
+            if(col == 0)
+            {
+                //Exit();
+            }
+
         }
 
         /// <summary>
@@ -162,19 +194,48 @@ namespace Simulation
             for (int i = 0; i < area.entities.Count; i++)
             {
                 Entity e = area.entities[i];
+                if(e.enabled.Value)
+                {
+                    int texwidth = 0;
+                    int texheight = 0;
+                    switch (e.tex)
+                    {
+                        case TextureAtlas.SPRITES:
+                            texwidth = spriteatlas.Width;
+                            texheight = spriteatlas.Height;
+                            break;
+                        case TextureAtlas.ANIMALS:
+                            texwidth = animalatlas.Width;
+                            texheight = animalatlas.Height;
+                            break;
 
-                int xsource = (e.Sprite % (tileatlas.Width / tilesize)) * tilesize;
-                int ysource = (int)Math.Floor((decimal)(e.Sprite) / (tileatlas.Width / tilesize)) * tilesize;
+                    }
+                    int xsource = (e.Sprite % (texwidth / tilesize)) * tilesize;
+                    int ysource = (int)Math.Floor((decimal)(e.Sprite) / (texheight / tilesize)) * tilesize;
 
-                Rectangle sourcerect = new Rectangle(xsource, ysource, tilesize, tilesize);
+                    Rectangle sourcerect = new Rectangle(xsource, ysource, tilesize, tilesize);
+                    switch (e.tex)
+                    {
+                        case TextureAtlas.SPRITES:
+                            e.Draw.Invoke(spriteBatch, pxlratio, spriteatlas, sourcerect);
+                            break;
+                        case TextureAtlas.ANIMALS:
+                            e.Draw.Invoke(spriteBatch, pxlratio, animalatlas, sourcerect);
+                            break;
 
-                e.Draw.Invoke(spriteBatch, pxlratio, spriteatlas, sourcerect);
-                
+                    }
+                }
             }
-            spriteBatch.DrawString(font, "Time: " + TimeCycle.Minutes, Vector2.Zero, Color.White);
-            spriteBatch.DrawString(font, "Time Scale: " + (1 + (Mouse.GetState().ScrollWheelValue / 120)), new Vector2(0, 20f), Color.White);
-            spriteBatch.DrawString(font, "Crops: " + Crops.harvestedcrops, new Vector2(0, 40f), Color.White);
+            spriteBatch.DrawString(font, "Time: " + TimeCycle.Hours + ":" + (TimeCycle.Minutes - (TimeCycle.Hours * 60)), Vector2.Zero, Color.White);
+            spriteBatch.DrawString(font, "Time Scale: " + updatesperframe, new Vector2(0, 20f), Color.White);
+            spriteBatch.DrawString(font, "Colonists: " + Colonist.numcolonists, new Vector2(0, 40f), Color.White);
+            spriteBatch.DrawString(font, "Crops: " + Crops.harvestedcrops, new Vector2(0, 60f), Color.White);
 
+            spriteBatch.Draw(textbox, new Rectangle(0, windowsize - (tilesize * 16), windowsize, tilesize * 16), Color.White);
+            spriteBatch.DrawString(font, "F: Farm", new Vector2(3, windowsize - (tilesize * 16) + 1), Color.White);
+            spriteBatch.DrawString(font, "B: Building", new Vector2(3, windowsize - (tilesize * 16) + 18), Color.White);
+            //spriteBatch.DrawString(font, "C: Colonists", new Vector2(3, windowsize - (tilesize * 16) + 35), Color.White);
+            spriteBatch.DrawString(font, EntityHighlight.CurrentDesc(area.entities), new Vector2(308, windowsize - (tilesize * 16) + 1), Color.White);
             we.Draw(spriteBatch);
 
             spriteBatch.End();
@@ -189,10 +250,6 @@ namespace Simulation
         public static void AddEntity (Entity e)
         {
             inst.area.entities.Add(e);
-        }
-        public static void DestroyEntity(Entity e)
-        {
-            inst.area.entities.Remove(e);
         }
     }
 }

@@ -26,3 +26,10 @@ C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Debug\Simulati
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\texturemap.xnb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\spritemap.xnb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\Font.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\animalmap.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\textbox.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Simulation.exe.manifest
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Simulation.application
+C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Debug\Simulation.exe.manifest
+C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Debug\Simulation.application
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll

@@ -11,7 +11,7 @@ namespace Simulation
         Area area;
         static List<Tuple<int, int>> plantedcrops = new List<Tuple<int, int>>();
         public static int harvestedcrops = 0;
-        float deathtime = 5f;
+        float deathtime = 1f;
         public Crops (Area area)
         {
             this.area = area;
@@ -21,8 +21,9 @@ namespace Simulation
         {
             if (TimeCycle.Hours == (Colonist.wakehour - 1))
             {
-                foreach(Tuple<int, int> place in plantedcrops)
+                for (int i = plantedcrops.Count - 1; i >= 0; i--)
                 {
+                    Tuple<int, int> place = plantedcrops[i];
                     if (area.tiles[place.Item1, place.Item2, 0] != Tile.Seed)
                         continue;
                     area.tiles[place.Item1, place.Item2, 0] = Tile.Crop;

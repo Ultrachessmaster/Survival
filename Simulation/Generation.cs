@@ -10,36 +10,135 @@ namespace Simulation
 {
     class Generation
     {
-        public static float waterbiome = 0.3f;
+        public const float waterbiome = 0.2f;
+        public const float sandbiome = 0.25f;
+        public const float vegetation = 0.5f;
+        public const float dirtbiome = 0.7f;
+        public const float stonebiome = 0.78f;
+        public const float snowbiome = 1f;
         public static int[,,] Generate(Vector3 size)
         {
             int[,] map = new int[(int)size.X, (int)size.Y];
-            OpenSimplexNoise o = new OpenSimplexNoise();
+            OpenSimplexNoise o = new OpenSimplexNoise(Simulation.seed);
+            Random r = new Random(Simulation.seed);
+            var inversescale = 18f;
             for (int x = 0; x < size.X; x++)
             {
                 for (int y = 0; y < size.Y; y++)
                 {
                     var noisex = (x / size.X) - 0.5f;
                     var noisey = (y / size.Y) - 0.5f;
-                    float height = ((float)o.Evaluate(25 * noisex, 25 * noisey) * 0.5f) + 0.5f;
-                    float scaledheigt = (float)Math.Pow(height, 2);
+                    float heightlarge = ((float)o.Evaluate(inversescale * 0.5f * noisex, inversescale * 0.5f * noisey) * 0.5f) + 0.5f;
+                    float heightmedium = ((float)o.Evaluate(inversescale * 0.35f * noisex, inversescale * 0.35f * noisey) * 0.5f) + 0.5f;
+                    float heightsmall = ((float)o.Evaluate(inversescale * 0.15f * noisex, inversescale * 0.15f * noisey) * 0.5f) + 0.5f;
+                    heightlarge *= 0.5f;
+                    heightmedium *= 0.35f;
+                    heightsmall *= 0.15f;
+                    float height = heightlarge + heightmedium + heightsmall;
+                    float scaledheight = (float)Math.Pow(height, 1.5f);
                     //Console.WriteLine(height);
-                    if(height < waterbiome)
+                    if (scaledheight <= snowbiome && height > stonebiome)
                     {
-                        map[x, y] = 4;
+                        map[x, y] = Tile.Snow;
+                    }
+                    if (scaledheight <= stonebiome && height > dirtbiome)
+                    {
+                        map[x, y] = Tile.Stone;
+                    }
+                    if (scaledheight <= vegetation && height > sandbiome)
+                    {
+                        map[x, y] = Tile.Vegetation;
+                    }
+                    if (scaledheight <= sandbiome && height > waterbiome)
+                    {
+                        map[x, y] = Tile.Sand;
+                    }
+                    if (scaledheight < waterbiome)
+                    {
+                        map[x, y] = Tile.Water;
                     }
                 }
             }
 
             int[,,] fullmap = new int[(int)size.X, (int)size.Y, (int)size.Z];
-            for(int x = 0; x < size.X; x++)
+            bool foundplace = false;
+            for (int x = 0; x < size.X; x++)
             {
                 for(int y = 0; y < size.Y; y++)
                 {
+                    
+                    bool xgreater = x > (size.X / 3f);
+                    bool xsmaller = x < (size.X - (size.X / 3f));
+                    bool ygreater = y > (size.Y / 3f);
+                    bool ysmaller = y < (size.Y - (size.Y / 3f));
+                    
+                    if (xgreater && xsmaller && ygreater && ysmaller && !foundplace)
+                    {
+                        int xoffset = 10;
+                        bool corner1notwater = map[x + xoffset, y] != Tile.Water;
+                        bool corner2notwater = map[x + 7, y + 5] != Tile.Water;
+                        bool outsidedoornotwater = map[x + 4, y - 1] != Tile.Water;
+                        if (map[x, y] == Tile.Water && corner1notwater && outsidedoornotwater)
+                        {
+                            for(int xb = x + xoffset; xb < x + xoffset + 7; xb++)
+                            {
+                                for (int yb = y; yb < y + 8; yb++)
+                                {
+                                    map[xb, yb] = Tile.PlasticWall;
+                                }
+                            }
+                            for (int xb = x + xoffset + 1; xb < x + + xoffset + 6; xb++)
+                            {
+                                for (int yb = y + 3; yb < y + 7; yb++)
+                                {
+                                    map[xb, yb] = Tile.PlasticFloor;
+                                }
+                            }
+                            map[x + xoffset + 3, y] = Tile.PlasticDoor;
+                            Colonist.AddDoor(new Tuple<int, int>(x + xoffset + 3, y));
+                            map[x + xoffset + 3, y + 1] = Tile.PlasticFloor;
+                            map[x + xoffset + 3, y + 2] = Tile.PlasticFloor;
+                            Simulation.AddEntity(new Colonist(new Vector2((x + xoffset + 3) * Simulation.tilesize, (y + 3) * Simulation.tilesize)));
+                            //Simulation.AddEntity(new Colonist(new Vector2((x + xoffset + 1) * Simulation.tilesize, (y + 3) * Simulation.tilesize)));
+                            //Simulation.AddEntity(new Colonist(new Vector2((x + xoffset + 5) * Simulation.tilesize, (y + 3) * Simulation.tilesize)));
+                            Camera.X = (x + xoffset - 10) * Simulation.tilesize;
+                            Camera.Y = (y - 10) * Simulation.tilesize;
+                            foundplace = true;
+                        }
+                    }
                     fullmap[x, y, 0] = map[x, y];
                 }
             }
+
             return fullmap;
+        }
+        public static List<Entity> GenerateEntities(int[,,] map)
+        {
+            List<Entity> ent = new List<Entity>();
+            Random r = new Random(Simulation.seed);
+
+            Color c = new Color(r.Range(0f, 1f), r.Range(0f, 1f), r.Range(0f, 1f));
+            int sprite = r.Next(0, 4);
+
+            AnimalTemplate at = new AnimalTemplate(c, sprite);
+
+            for (int x = 0; x < map.GetUpperBound(0) + 1; x++)
+            {
+                for (int y = 0; y < map.GetUpperBound(1) + 1; y++)
+                {
+                    
+                    float choice = r.Range(0f, 1f);
+                    bool notwall = map[x, y, 0] != Tile.PlasticWall;
+                    bool notfloor = map[x, y, 0] != Tile.PlasticFloor;
+                    bool notdoor = map[x, y, 0] != Tile.PlasticDoor;
+                    if (choice < 0.0007 && notwall && notfloor && notdoor)
+                    {
+                        ent.Add(at.Create(new Vector2(x * Simulation.tilesize, y * Simulation.tilesize)));
+                    }
+                }
+            }
+            
+            return ent;
         }
     }
 }

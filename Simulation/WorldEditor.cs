@@ -16,6 +16,8 @@ namespace Simulation
         List<int> buildingtiles;
         int screenheight;
         int tile = 0;
+        int menutiles;
+        int textboxborder;
         bool placingtiles = true;
         Menu menu;
         Context con = Context.FARM;
@@ -31,23 +33,25 @@ namespace Simulation
             buildingtiles.Add(Tile.PlasticFloor);
             buildingtiles.Add(Tile.PlasticDoor);
             menu = new Menu(farmtiles, screenheight);
+            menutiles = screenheight - (Simulation.tilesize * 2);
+            textboxborder = screenheight - (Simulation.tilesize * 16);
         }
 
         public void Update (Area area)
         {
             var mstate = Mouse.GetState();
-            var mwx = Math.Max(((mstate.X / Simulation.pxlratio) + Camera.X) / Simulation.tilesize, 0);
-            var mwy = Math.Max(((mstate.Y / Simulation.pxlratio) + Camera.Y) / Simulation.tilesize, 0);
+            var mwx = Input.MouseTileX();
+            var mwy = Input.MouseTileX();
             var mx = mstate.X;
             var my = mstate.Y;
-            var menutiles = screenheight - (Simulation.tilesize * 2);
+            
             
             var left1stb = Input.IsMouseButtonPressed(0);
             var right1stb = Input.IsMouseButtonPressed(1);
             var leftb = mstate.LeftButton == ButtonState.Pressed;
             var rightb = mstate.RightButton == ButtonState.Pressed;
-            if (Input.IsKeyDown(Keys.C))
-                con = Context.COLONIST;
+            //if (Input.IsKeyDown(Keys.C))
+            //    con = Context.COLONIST;
             if(Input.IsKeyDown(Keys.F))
                 con = Context.FARM;
             if (Input.IsKeyDown(Keys.B))
@@ -57,69 +61,73 @@ namespace Simulation
                 var idx = Math.Min(mx / (Simulation.tilesize * 2), menu.NumTiles - 1);
                 tile = menu.TileSelected(idx);
             }
-                
-            switch (con)
+            if(my < textboxborder)
             {
-                case Context.FARM:
-                    menu = new Menu(farmtiles, screenheight);
-                    placingtiles = true;
-                    break;
-                case Context.COLONIST:
-                    placingtiles = false;
-                    if (left1stb)
-                        Simulation.AddEntity(new Colonist(new Vector2((float)Math.Round((double)mwx * Simulation.tilesize), (float)Math.Round((double)mwy * Simulation.tilesize))));
-                    break;
-                case Context.BUILDING:
-                    menu = new Menu(buildingtiles, screenheight);
-                    placingtiles = true;
-                    break;
-            }
-            if(placingtiles)
-            {
-                switch (tile)
+                switch (con)
                 {
-                    case 1:
-                        if (leftb && area.tiles[mwx, mwy, 0] == Tile.Sand)
-                            area.tiles[mwx, mwy, 0] = Tile.TilledLand;
+                    case Context.FARM:
+                        menu = new Menu(farmtiles, screenheight);
+                        placingtiles = true;
                         break;
-                    case 4:
-                        bool wateraround = area.NumberSurrounding(mwx, mwy, 0, Tile.Water) > 0;
-                        if (leftb && wateraround)
-                        {
-                            area.tiles[mwx, mwy, 0] = Tile.Water;
-                        }
-
+                    case Context.COLONIST:
+                        menu = new Menu(new List<int>(), screenheight);
+                        placingtiles = false;
+                        if (left1stb)
+                            Simulation.AddEntity(new Colonist(new Vector2((float)Math.Round((double)mwx * Simulation.tilesize), (float)Math.Round((double)mwy * Simulation.tilesize))));
                         break;
-                    case 5:
-                        if (leftb)
-                            area.tiles[mwx, mwy, 0] = Tile.PlasticWall;
-                        break;
-                    case 6:
-                        if (leftb)
-                            area.tiles[mwx, mwy, 0] = Tile.PlasticFloor;
-                        break;
-                    case 7:
-                        bool wallsaround = area.NumberSurrounding(mwx, mwy, 0, Tile.PlasticWall) > 1;
-                        bool floorsaround = area.NumberSurrounding(mwx, mwy, 0, Tile.PlasticFloor) > 0;
-                        if (leftb && wallsaround && floorsaround)
-                        {
-                            area.tiles[mwx, mwy, 0] = Tile.PlasticDoor;
-                            Colonist.AddDoor(new Tuple<int, int>(mwx, mwy));
-                        }
-                            
+                    case Context.BUILDING:
+                        menu = new Menu(buildingtiles, screenheight);
+                        placingtiles = true;
                         break;
                 }
-                if (rightb)
-                    area.tiles[mwx, mwy, 0] = Tile.Sand;
-                    
+                if (placingtiles)
+                {
+                    switch (tile)
+                    {
+                        case Tile.TilledLand:
+                            bool notstone = area.tiles[mwx, mwy, 0] != Tile.Stone;
+                            bool notwater = area.tiles[mwx, mwy, 0] != Tile.Water;
+                            bool notsand = area.tiles[mwx, mwy, 0] != Tile.Sand;
+                            if (leftb && notstone && notwater && notsand)
+                                area.tiles[mwx, mwy, 0] = Tile.TilledLand;
+                            break;
+                        case Tile.Water:
+                            bool wateraround = area.NumberSurrounding(mwx, mwy, 0, Tile.Water) > 0;
+                            bool riveraround = area.NumberSurrounding(mwx, mwy, 0, Tile.River) > 0;
+                            if (leftb && (wateraround || riveraround))
+                            {
+                                area.tiles[mwx, mwy, 0] = Tile.Water;
+                            }
+
+                            break;
+                        case Tile.PlasticWall:
+                            if (leftb)
+                                area.tiles[mwx, mwy, 0] = Tile.PlasticWall;
+                            break;
+                        case Tile.PlasticFloor:
+                            if (leftb)
+                                area.tiles[mwx, mwy, 0] = Tile.PlasticFloor;
+                            break;
+                        case Tile.PlasticDoor:
+                            bool wallsaround = area.NumberSurrounding(mwx, mwy, 0, Tile.PlasticWall) > 1;
+                            bool floorsaround = area.NumberSurrounding(mwx, mwy, 0, Tile.PlasticFloor) > 0;
+                            if (leftb && wallsaround && floorsaround)
+                            {
+                                area.tiles[mwx, mwy, 0] = Tile.PlasticDoor;
+                                Colonist.AddDoor(new Tuple<int, int>(mwx, mwy));
+                            }
+
+                            break;
+                    }
+                    bool waterortilledland = (area.tiles[mwx, mwy, 0] == Tile.River || area.tiles[mwx, mwy, 0] == Tile.TilledLand || area.tiles[mwx, mwy, 0] == Tile.Seed || area.tiles[mwx, mwy, 0] == Tile.Crop);
+
+                }
             }
+            
             if (Input.IsKeyPressed(Keys.I))
-                Simulation.pxlratio++;
+                Simulation.pxlratio = Math.Min(4, Simulation.pxlratio + 1);
             if (Input.IsKeyPressed(Keys.K))
-                Simulation.pxlratio--;
-            Simulation.inst.Content.Equals(1);
-            int vx = Simulation.GD.Viewport.X;
-            int vy = Simulation.GD.Viewport.Y;
+                Simulation.pxlratio = Math.Max(1, Simulation.pxlratio - 1);
             if (Input.IsKeyDown(Keys.Right))
                 Camera.X += Simulation.tilesize;
             if (Input.IsKeyDown(Keys.Left))

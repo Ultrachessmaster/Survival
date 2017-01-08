@@ -9,22 +9,27 @@ using System.Threading.Tasks;
 namespace Simulation
 {
     public class Entity {
+        public TextureAtlas tex;
 	    public int Sprite
         {
             get { return sprite; }
             set { sprite = value; }
         }
         private int sprite;
-        private int width = 8;
-        private int height = 8;
+        protected int width = 8;
+        protected int height = 8;
         
         public Vector2 pos;
         public Vector2 scale = new Vector2(1, 1);
         public float rotation;
+        public RefWrapper<bool> enabled = new RefWrapper<bool>(true);
 
         //Kinda kludgy
         public string Tag { get { return tag; } }
         protected string tag = "";
+
+        public string Description { get { return description; } }
+        protected string description = "";
 
         protected bool visible = true;
 

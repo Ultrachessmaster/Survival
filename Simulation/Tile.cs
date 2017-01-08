@@ -8,7 +8,7 @@ namespace Simulation
 {
     class Tile
     {
-        public const int Sand = 0;
+        public const int Dirt = 0;
         public const int TilledLand = 1;
         public const int Seed = 2;
         public const int Crop = 3;
@@ -16,5 +16,11 @@ namespace Simulation
         public const int PlasticWall = 5;
         public const int PlasticFloor = 6;
         public const int PlasticDoor = 7;
+        public const int Snow = 8;
+        public const int Stone = 9;
+        public const int Vegetation = 10;
+        public const int Slime = 11;
+        public const int Sand = 12;
+        public const int River = 13;
     }
 }

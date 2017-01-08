@@ -29,7 +29,7 @@ namespace Simulation
                 int idx = tiles[i];
                 var yindex = screenheight - (Simulation.tilesize * 2);
 
-                Rectangle destrect = new Rectangle(i * Simulation.tilesize * 2, yindex, Simulation.tilesize * 2, Simulation.tilesize * 2);
+                Rectangle destrect = new Rectangle(i * Simulation.tilesize * 2 + 2, yindex - 2, Simulation.tilesize * 2, Simulation.tilesize * 2);
 
                 int xsource = (idx % (tex.Width / Simulation.tilesize)) * Simulation.tilesize;
                 int ysource = (int)Math.Floor((decimal)(idx) / (tex.Width / Simulation.tilesize)) * Simulation.tilesize;

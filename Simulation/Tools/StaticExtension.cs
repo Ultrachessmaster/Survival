@@ -6,7 +6,6 @@ namespace Simulation
 {
     static class StaticExtension
     {
-        static System.Random ra = new System.Random();
         public static float Cross(this Vector2 v, Vector2 a)
         {
             return 0;
@@ -25,7 +24,7 @@ namespace Simulation
         }
         public static float Range(this Random r, float min, float max)
         {
-            return (float)ra.NextDouble() * (max - min) + min;
+            return (float)r.NextDouble() * (max - min) + min;
         }
     }
 }

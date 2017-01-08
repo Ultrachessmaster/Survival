@@ -26,3 +26,9 @@ C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Releas
 C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Release\Simulation.exe
 C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Release\Simulation.pdb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Release\Simulation.csprojResolveAssemblyReference.cache
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Simulation.exe.manifest
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Simulation.application
+C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Release\Simulation.exe.manifest
+C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Release\Simulation.application
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Content\textbox.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Content\animalmap.xnb

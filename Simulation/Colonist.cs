@@ -9,34 +9,55 @@ namespace Simulation
 {
     class Colonist : Entity
     {
-        float energy = 15;
-        float maxenergy = 15;
-        float fullness = 24 * 21;
+        float energy = 40;
+        float maxenergy = 40;
+        float satiation = 24 * 21;
         public const int sleephour = 22;
-        public const int wakehour = 4;
-        float longestdist = 4;
-        float speed = 1f;
+        public const int wakehour = 6;
+        const int longestdist = 10;
+        float slowness = 1f;
+        int speed = 8;
         float movementfoodcost = 0.5f;
         float plantingfoodcost = 0.5f;
+        int hungry = 300;
         List<Tuple<int, int>> places = new List<Tuple<int, int>>();
         static List<Tuple<int, int>> doors = new List<Tuple<int, int>>();
+        public static int numcolonists;
         Vector2 dest;
+        bool atdoor = false;
         public Colonist (Vector2 pos)
         {
             this.pos = pos;
             Sprite = 0;
             draw = Drw;
             update = upd;
-            Timer t = new Timer(Action, 1f);
-            Timer t1 = new Timer(Weaken, 1f);
+            tag = "Colonist";
+            tex = TextureAtlas.SPRITES;
+            Timer t = new Timer(Action, 1f, enabled);
+            Timer t1 = new Timer(Weaken, 1f, enabled);
+            UpdateDescription();
+        }
+
+        public void UpdateDescription()
+        {
+            StringBuilder sb = new StringBuilder("--- Colonist ---\n");
+            sb.AppendLine("Energy: " + energy);
+            sb.AppendLine("Satiation: " + satiation);
+            description = sb.ToString();
         }
 
         public void upd (GameTime g)
         {
-            
-            if (fullness <= 0)
-                Simulation.DestroyEntity(this);
+            if (satiation <= 0)
+                enabled = new RefWrapper<bool>(false);
+            if(satiation <= hungry && Crops.harvestedcrops > 0)
+            {
+                Crops.harvestedcrops--;
+                satiation += 4;
+            }
+            UpdateDescription();
         }
+
 
         void FindAllCrops ()
         {
@@ -59,24 +80,57 @@ namespace Simulation
 
         void Weaken(float overtime)
         {
-            fullness--;
-            Timer t = new Timer(Weaken, 1f);
+            satiation--;
+            Timer t = new Timer(Weaken, 1f, enabled);
         }
 
         void Action (float overtime)
         {
-            FindAllCrops();
+            /*FindAllCrops();
             bool daytime = TimeCycle.Hours < sleephour && TimeCycle.Hours > wakehour;
-            if (places.Count > 0 && daytime && energy > 0)
+            if (places.Count > 0 && daytime)
             {
+                atdoor = false;
                 PlantCrops();
             } else if (!daytime && doors.Count > 0)
             {
                 energy = maxenergy;
                 Sleep();
+            }*/
+            var post = postotuple();
+            int[,,] tiles = Simulation.inst.area.tiles;
+            int xlower = post.Item1 - longestdist;
+            int ylower = post.Item2 - longestdist;
+            int xhigher = post.Item1 + longestdist;
+            int yhigher = post.Item2 + longestdist;
+            bool[,] map = new bool[longestdist * 2, longestdist * 2];
+            for(int x = 0; x < longestdist * 2; x++)
+            {
+                for (int y = 0; y < longestdist * 2; y++)
+                {
+                    var xd = post.Item1 - longestdist + x;
+                    var yd = post.Item2 - longestdist + y;
+                    bool notwater = tiles[xd, yd, 0] != Tile.Water;
+                    bool notwall = tiles[xd, yd, 0] != Tile.PlasticWall;
+                    bool notriver = tiles[xd, yd, 0] != Tile.River;
+                    bool notstone = tiles[xd, yd, 0] != Tile.Stone;
+                    map[x, y] = notwater && notriver && notwall && notstone;
+                }
             }
+            if (!map[0, 0])
+            {
+                Console.WriteLine("Bad coordinate for pathfinding.");
+                return;
+            }
+                
+            AStar a = new AStar(new Tuple<int, int>(longestdist, longestdist), new Tuple<int, int>(0, 0), map);
+            var path = a.CalculatePath();
+            var dest = path.Last();
+            dest = new Tuple<int, int>(dest.Item1 + post.Item1 - longestdist, dest.Item2 + post.Item2 - longestdist);
+            Vector2 dir = new Vector2(dest.Item1 * Simulation.tilesize, dest.Item1 * Simulation.tilesize);
+            Move(dir);
             
-            Timer t = new Timer(Action, speed);
+            Timer t = new Timer(Action, slowness, enabled);
                 
         }
 
@@ -93,15 +147,21 @@ namespace Simulation
 
             Move(dest);
 
-            var posint = new Tuple<int, int>((int)Math.Round(pos.X) / Simulation.tilesize, (int)Math.Round(pos.Y) / Simulation.tilesize);
+            var posint = postotuple();
+            
             if (posint.Equals(crop))
             {
                 if (area.tiles[crop.Item1, crop.Item2, 0] == Tile.Crop)
                     Crops.harvestedcrops++;
                 area.tiles[crop.Item1, crop.Item2, 0] = Tile.Seed;
                 Crops.AddCrop(crop);
-                fullness -= plantingfoodcost;
+                satiation -= plantingfoodcost;
             }
+        }
+
+        Tuple<int, int> postotuple()
+        {
+            return new Tuple<int, int>((int)Math.Round(pos.X) / Simulation.tilesize, (int)Math.Round(pos.Y) / Simulation.tilesize);
         }
 
         void Move(Vector2 dest)
@@ -126,7 +186,7 @@ namespace Simulation
                 dir.Y = Math.Sign(dir.Y) * Simulation.tilesize;
             }
             int tile = area.tiles[(int)(pos + dir).X / Simulation.tilesize, (int)(pos + dir).Y / Simulation.tilesize, 0];
-            if (tile != Tile.Water && tile != Tile.PlasticWall && dir != Vector2.Zero)
+            if (tile != Tile.Water && tile != Tile.PlasticWall && tile != Tile.River && dir != Vector2.Zero)
             {
                 TakeMove(dir);
             } else if (dir != Vector2.Zero)
@@ -143,7 +203,7 @@ namespace Simulation
                     newdir.X = Math.Sign(newdir.X) * Simulation.tilesize;
                 }
                 tile = area.tiles[(int)(pos + newdir).X / Simulation.tilesize, (int)(pos + newdir).Y / Simulation.tilesize, 0];
-                if (tile != Tile.Water && tile != Tile.PlasticWall)
+                if (tile != Tile.Water && tile != Tile.River && tile != Tile.PlasticWall)
                 {
                     TakeMove(newdir);
                 }
@@ -154,14 +214,32 @@ namespace Simulation
         {
             pos += dir;
             energy -= 1f;
-            fullness -= movementfoodcost;
-            speed = maxenergy / (2 * energy + 2);
+            satiation -= movementfoodcost;
+            slowness = maxenergy / (speed * energy + 2);
         }
 
         void Sleep ()
         {
-            var door = FindClosest(doors, new Tuple<int, int>((int)pos.X / Simulation.tilesize, (int)pos.Y / Simulation.tilesize));
-            Move(new Vector2(door.Item1 * Simulation.tilesize, door.Item2 * Simulation.tilesize));
+            var position = new Tuple<int, int>((int)pos.X / Simulation.tilesize, (int)pos.Y / Simulation.tilesize);
+            var door = FindClosest(doors, position);
+            if(!atdoor)
+            {
+                Move(new Vector2(door.Item1 * Simulation.tilesize, door.Item2 * Simulation.tilesize));
+                position = new Tuple<int, int>((int)pos.X / Simulation.tilesize, (int)pos.Y / Simulation.tilesize);
+                if (position.Equals(door))
+                    atdoor = true;
+            } else
+            {
+                var destination = new Tuple<int, int>(door.Item1, door.Item2 + 3);
+                Move(new Vector2(destination.Item1 * Simulation.tilesize, destination.Item2 * Simulation.tilesize));
+                position = new Tuple<int, int>((int)pos.X / Simulation.tilesize, (int)pos.Y / Simulation.tilesize);
+                if(position.Equals(description))
+                {
+                    energy = maxenergy;
+                }
+
+            }
+            
         }
 
         public static void AddDoor(Tuple<int, int> door)

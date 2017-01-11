@@ -22,7 +22,7 @@ namespace Simulation
         {
             
         }
-        public int NumberSurrounding(int x, int y, int z, int type)
+        public int TilesSurrounding(int x, int y, int z, int type)
         {
             int count = 0;
             for(int i = x - 1; i < x + 2; i++)
@@ -41,6 +41,30 @@ namespace Simulation
             }
             return count;
         }
-       
+        public int EntitiesSurrounding(int x, int y, int z, string tag)
+        {
+            int count = 0;
+            foreach(Entity e in entities)
+            {
+                bool correcttype = (e.Tag == tag);
+                bool correctx = (x <= e.pos.X + 1 && x >= e.pos.X - 1);
+                bool correcty = (y <= e.pos.Y + 1 && y >= e.pos.Y - 1);
+                if (correcttype && correctx && correcty)
+                    count++;
+            }
+            return count;
+        }
+
+        public Entity GetEntity(XY pos, string tag)
+        {
+            foreach (Entity e in entities)
+            {
+                if (e.Tag == tag && e.pos.Equals(pos))
+                {
+                    return e;
+                }
+            }
+            return null;
+        }
     }
 }

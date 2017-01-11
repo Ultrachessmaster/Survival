@@ -19,9 +19,11 @@ namespace Simulation
         WorldEditor we;
         TimeCycle timecycle = new TimeCycle();
         Crops crops;
+        ColonistManager colm;
         public static List<Timer> Timers = new List<Timer>();
         public static int tilesize = 8;
         public static int pxlratio = 4;
+        public static int currentlayer = 0;
         int updatesperframe = 1;
         int initscrollwheel = 0;
         public static int windowsize { get; internal set; }
@@ -62,15 +64,11 @@ namespace Simulation
             IsMouseVisible = true;
             base.Initialize();
 
-            area = new Area();
-            var size = new Vector3(512, 512, 1);
-            var map = Generation.Generate(size);
-            area.SetMap(map);
-            //area.SetMap(new int[(int)size.X,(int)size.Y,(int)size.Y]);
-            //AddEntity(new Colonist(new Vector2(5 * tilesize, 5 * tilesize)));
-            area.entities.AddRange(Generation.GenerateEntities(map));
+            var size = new Vector3(512, 512, 2);
+            area = Generation.Generate(size);
             
             crops = new Crops(area);
+            colm = new ColonistManager(area);
         }
 
         /// <summary>
@@ -153,6 +151,7 @@ namespace Simulation
             {
                 //Exit();
             }
+            colm.Update();
 
         }
 
@@ -179,16 +178,16 @@ namespace Simulation
             {
                 for (int y = startingy; y < endy; y++)
                 {
-                    for (int layer = 0; layer < tilemap.GetUpperBound(2) + 1; layer++)
-                    {
+                    //for (int layer = 0; layer < tilemap.GetUpperBound(2) + 1; layer++)
+                    //{
                         Rectangle destrect = new Rectangle((x * tilesize - Camera.X) * pxlratio, (y * tilesize - Camera.Y) * pxlratio, tilesize * pxlratio, tilesize * pxlratio);
 
-                        int xsource = ((tilemap[x, y, layer]) % (tileatlas.Width / tilesize)) * tilesize;
-                        int ysource = (int)Math.Floor((decimal)(tilemap[x, y, layer]) / (tileatlas.Width / tilesize)) * tilesize;
+                        int xsource = ((tilemap[x, y, currentlayer]) % (tileatlas.Width / tilesize)) * tilesize;
+                        int ysource = (int)Math.Floor((decimal)(tilemap[x, y, currentlayer]) / (tileatlas.Width / tilesize)) * tilesize;
 
                         Rectangle sourcerect = new Rectangle(xsource, ysource, tilesize, tilesize);
                         spriteBatch.Draw(tileatlas, destrect, sourcerect, darkness);
-                    }
+                    //}
                 }
             }
             for (int i = 0; i < area.entities.Count; i++)
@@ -217,10 +216,10 @@ namespace Simulation
                     switch (e.tex)
                     {
                         case TextureAtlas.SPRITES:
-                            e.Draw.Invoke(spriteBatch, pxlratio, spriteatlas, sourcerect);
+                            e.Draw.Invoke(spriteBatch, pxlratio, spriteatlas, sourcerect, Color.White);
                             break;
                         case TextureAtlas.ANIMALS:
-                            e.Draw.Invoke(spriteBatch, pxlratio, animalatlas, sourcerect);
+                            e.Draw.Invoke(spriteBatch, pxlratio, animalatlas, sourcerect, Color.White);
                             break;
 
                     }
@@ -234,8 +233,13 @@ namespace Simulation
             spriteBatch.Draw(textbox, new Rectangle(0, windowsize - (tilesize * 16), windowsize, tilesize * 16), Color.White);
             spriteBatch.DrawString(font, "F: Farm", new Vector2(3, windowsize - (tilesize * 16) + 1), Color.White);
             spriteBatch.DrawString(font, "B: Building", new Vector2(3, windowsize - (tilesize * 16) + 18), Color.White);
-            //spriteBatch.DrawString(font, "C: Colonists", new Vector2(3, windowsize - (tilesize * 16) + 35), Color.White);
-            spriteBatch.DrawString(font, EntityHighlight.CurrentDesc(area.entities), new Vector2(308, windowsize - (tilesize * 16) + 1), Color.White);
+            var ent = EntityHighlight.CurrentEntity(area.entities);
+            if(ent != null)
+            {
+                spriteBatch.DrawString(font, ent.Description, new Vector2(308, windowsize - (tilesize * 16) + 1), Color.White);
+            }
+            spriteBatch.DrawString(font, "X: " + Input.MouseTileX().ToString(), new Vector2(458, windowsize - (tilesize * 16) + 1), Color.White);
+            spriteBatch.DrawString(font, "Y: " + Input.MouseTileY().ToString(), new Vector2(458, windowsize - (tilesize * 16) + 19), Color.White);
             we.Draw(spriteBatch);
 
             spriteBatch.End();

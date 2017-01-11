@@ -19,7 +19,7 @@ namespace Simulation
         protected int width = 8;
         protected int height = 8;
         
-        public Vector2 pos;
+        public XY pos;
         public Vector2 scale = new Vector2(1, 1);
         public float rotation;
         public RefWrapper<bool> enabled = new RefWrapper<bool>(true);
@@ -36,14 +36,14 @@ namespace Simulation
         public Action<GameTime> Update { get { return update; } }
         protected Action<GameTime> update;
 
-        public Action<SpriteBatch, int, Texture2D, Rectangle> Draw { get { return draw; } }
-        protected Action<SpriteBatch, int, Texture2D, Rectangle> draw;
+        public Action<SpriteBatch, int, Texture2D, Rectangle, Color> Draw { get { return draw; } }
+        protected Action<SpriteBatch, int, Texture2D, Rectangle, Color> draw;
 
-        protected void Drw (SpriteBatch sb, int pxlratio, Texture2D tex, Rectangle sourcerec)
+        protected void Drw (SpriteBatch sb, int pxlratio, Texture2D tex, Rectangle sourcerec, Color col)
         {
             if (visible)
             {
-                sb.Draw(tex, new Rectangle(((int)Math.Round(pos.X) - Camera.X) * pxlratio, ((int)Math.Round(pos.Y) - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerec, Color.White);
+                sb.Draw(tex, new Rectangle((pos.X * Simulation.tilesize - Camera.X) * pxlratio, (pos.Y * Simulation.tilesize - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerec, col);
 
             }
         }

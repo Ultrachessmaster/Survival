@@ -8,7 +8,7 @@ namespace Simulation
 {
     class Tile
     {
-        public const int Dirt = 0;
+        public const int Dirt = 15;
         public const int TilledLand = 1;
         public const int Seed = 2;
         public const int Crop = 3;

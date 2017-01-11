@@ -12,7 +12,7 @@ namespace Simulation
     {
         Color col;
 
-        public Animal(Vector2 pos, Color color)
+        public Animal(XY pos, Color color)
         {
             this.pos = pos;
             tex = TextureAtlas.ANIMALS;
@@ -23,9 +23,9 @@ namespace Simulation
             
         }
 
-        public void Dr(SpriteBatch sb, int pxlratio, Texture2D tex, Rectangle sourcerec)
+        public void Dr(SpriteBatch sb, int pxlratio, Texture2D tex, Rectangle sourcerec, Color color)
         {
-            sb.Draw(tex, new Rectangle(((int)Math.Round(pos.X) - Camera.X) * pxlratio, ((int)Math.Round(pos.Y) - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerec, col);
+            Drw(sb, pxlratio, tex, sourcerec, col);
         }
 
         public void Upd (float ot)
@@ -34,10 +34,10 @@ namespace Simulation
             Timer t = new Timer(Upd, 1);
         }
 
-        public Vector2 Direction()
+        public XY Direction()
         {
             Random r = new Random((int)DateTime.Now.Ticks * 2);
-            var dir = new Vector2(r.Next(-1, 2) * Simulation.tilesize, r.Next(-1, 2) * Simulation.tilesize);
+            var dir = new XY(r.Next(-1, 2), r.Next(-1, 2));
             return dir;
         }
 

@@ -66,31 +66,36 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AccessOnce.cs" />
+    <Compile Include="Goal.cs" />
+    <Compile Include="Tool.cs" />
+    <Compile Include="Tools\AccessOnce.cs" />
     <Compile Include="Animal.cs" />
     <Compile Include="AnimalTemplate.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="Area.cs" />
-    <Compile Include="AStar.cs" />
+    <Compile Include="Tools\AStar.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Colonist.cs" />
+    <Compile Include="ColonistManager.cs" />
     <Compile Include="Crops.cs" />
     <Compile Include="EntityHighlight.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Menu.cs" />
-    <Compile Include="OpenSimplexNoise.cs" />
-    <Compile Include="RefWrapper.cs" />
+    <Compile Include="Generation\OpenSimplexNoise.cs" />
+    <Compile Include="Plant.cs" />
+    <Compile Include="Tools\RefWrapper.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TimeCycle.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="Generation.cs" />
+    <Compile Include="Generation\Generation.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\Input.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="Tools\StaticExtension.cs" />
     <Compile Include="Tools\Timer.cs" />
     <Compile Include="WorldEditor.cs" />
+    <Compile Include="Tools\XY.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -120,6 +125,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Downloads\High-Speed-Priority-Queue-for-C-Sharp-master\High-Speed-Priority-Queue-for-C-Sharp-master\Priority Queue\Priority Queue.csproj">
+      <Project>{1531C1EA-BD53-41D1-A34B-CFCDF79D2651}</Project>
+      <Name>Priority Queue</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

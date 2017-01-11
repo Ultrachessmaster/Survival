@@ -17,7 +17,7 @@ namespace Simulation
             this.sprite = sprite;
         }
 
-        public Animal Create(Vector2 pos)
+        public Animal Create(XY pos)
         {
             Animal a = new Animal(pos, col);
             a.Sprite = sprite;

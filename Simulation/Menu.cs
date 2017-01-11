@@ -11,22 +11,22 @@ namespace Simulation
     class Menu
     {
         Texture2D tex;
-        List<int> tiles;
+        List<int> tools;
         int screenheight;
-        public int NumTiles { get { return tiles.Count; } }
+        public int NumTiles { get { return tools.Count; } }
 
-        public Menu (List<int> tiles, int screenheight)
+        public Menu (List<int> tools, int screenheight)
         {
-            this.tiles = tiles;
+            this.tools = tools;
             this.screenheight = screenheight;
-            tex = Simulation.CM.Load<Texture2D>("texturemap");
+            tex = Simulation.CM.Load<Texture2D>("toolmap");
         }
 
         public void Draw(SpriteBatch sb)
         {
-            for(int i = 0; i < tiles.Count; i++)
+            for(int i = 0; i < tools.Count; i++)
             {
-                int idx = tiles[i];
+                int idx = tools[i];
                 var yindex = screenheight - (Simulation.tilesize * 2);
 
                 Rectangle destrect = new Rectangle(i * Simulation.tilesize * 2 + 2, yindex - 2, Simulation.tilesize * 2, Simulation.tilesize * 2);
@@ -40,9 +40,9 @@ namespace Simulation
             }
         }
 
-        public int TileSelected(int idx)
+        public int ToolSelected(int idx)
         {
-            return tiles[idx];
+            return tools[idx];
         }
     }
 }

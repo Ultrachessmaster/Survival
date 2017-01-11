@@ -67,6 +67,18 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Priority Queue.dll" size="22016">
+      <assemblyIdentity name="Priority Queue" version="4.0.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>yKmi+qFXXkfmp+UMQOPkeIAEO3Ru9WZhANKdPhlW3Xs=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SharpDX.dll" size="558080">
       <assemblyIdentity name="SharpDX" version="2.6.3.0" publicKeyToken="B4DCF0F35E5521F1" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -175,14 +187,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Simulation.exe" size="199648">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Simulation.exe" size="202720">
       <assemblyIdentity name="Simulation" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>/ymsbjzAJQtb8fuiyjHAawpxHcUTfVFsJ6U3gFjJDkg=</dsig:DigestValue>
+        <dsig:DigestValue>Fhz4dalTk/YlSDWNhZp/KaItq0lTVkQ8vDjBdwza0HA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -210,7 +222,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>fGuK+y6bBS1uqO/uWUuVG67qALeUFHPKbfUa6X6tH8g=</dsig:DigestValue>
+      <dsig:DigestValue>m/pjFgBPgCzgjKbYkgADi73jl9tugK5sClK0MKBdKng=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\textbox.xnb" size="409685">
@@ -228,7 +240,16 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>1fTqXEHr5jDRlypQnyP87eRO0nf26TL0e7yPCtHluWM=</dsig:DigestValue>
+      <dsig:DigestValue>nTje+bpVhKoiJZvBuc0nopjA3upGSCgjCLsz5gpl+jA=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\toolmap.xnb" size="4181">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>3e2to8VVysOeOh6j+Qjzf5f4dsb/rs1klgpXOqX3D4w=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Icon.ico" size="147541">

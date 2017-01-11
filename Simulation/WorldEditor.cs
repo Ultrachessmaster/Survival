@@ -12,8 +12,7 @@ namespace Simulation
     class WorldEditor
     {
         public Context context { get { return con; } }
-        List<int> farmtiles = new List<int>();
-        List<int> buildingtiles;
+        List<int> farmtools = new List<int>();
         int screenheight;
         int tile = 0;
         int menutiles;
@@ -25,14 +24,11 @@ namespace Simulation
         public WorldEditor (int screenheight)
         {
             this.screenheight = screenheight;
-            farmtiles = new List<int>();
-            farmtiles.Add(Tile.TilledLand);
-            farmtiles.Add(Tile.Water);
-            buildingtiles = new List<int>();
-            buildingtiles.Add(Tile.PlasticWall);
-            buildingtiles.Add(Tile.PlasticFloor);
-            buildingtiles.Add(Tile.PlasticDoor);
-            menu = new Menu(farmtiles, screenheight);
+            farmtools = new List<int>();
+            farmtools.Add(Tool.Hoe);
+            farmtools.Add(Tool.Grab);
+            farmtools.Add(Tool.Walk);
+            menu = new Menu(farmtools, screenheight);
             menutiles = screenheight - (Simulation.tilesize * 2);
             textboxborder = screenheight - (Simulation.tilesize * 16);
         }
@@ -45,13 +41,10 @@ namespace Simulation
             var mx = mstate.X;
             var my = mstate.Y;
             
-            
             var left1stb = Input.IsMouseButtonPressed(0);
             var right1stb = Input.IsMouseButtonPressed(1);
             var leftb = mstate.LeftButton == ButtonState.Pressed;
             var rightb = mstate.RightButton == ButtonState.Pressed;
-            //if (Input.IsKeyDown(Keys.C))
-            //    con = Context.COLONIST;
             if(Input.IsKeyDown(Keys.F))
                 con = Context.FARM;
             if (Input.IsKeyDown(Keys.B))
@@ -59,24 +52,14 @@ namespace Simulation
             if (my >= menutiles && rightb)
             {
                 var idx = Math.Min(mx / (Simulation.tilesize * 2), menu.NumTiles - 1);
-                tile = menu.TileSelected(idx);
+                tile = menu.ToolSelected(idx);
             }
             if(my < textboxborder)
             {
                 switch (con)
                 {
                     case Context.FARM:
-                        menu = new Menu(farmtiles, screenheight);
-                        placingtiles = true;
-                        break;
-                    case Context.COLONIST:
-                        menu = new Menu(new List<int>(), screenheight);
-                        placingtiles = false;
-                        if (left1stb)
-                            Simulation.AddEntity(new Colonist(new Vector2((float)Math.Round((double)mwx * Simulation.tilesize), (float)Math.Round((double)mwy * Simulation.tilesize))));
-                        break;
-                    case Context.BUILDING:
-                        menu = new Menu(buildingtiles, screenheight);
+                        menu = new Menu(farmtools, screenheight);
                         placingtiles = true;
                         break;
                 }
@@ -92,8 +75,8 @@ namespace Simulation
                                 area.tiles[mwx, mwy, 0] = Tile.TilledLand;
                             break;
                         case Tile.Water:
-                            bool wateraround = area.NumberSurrounding(mwx, mwy, 0, Tile.Water) > 0;
-                            bool riveraround = area.NumberSurrounding(mwx, mwy, 0, Tile.River) > 0;
+                            bool wateraround = area.TilesSurrounding(mwx, mwy, 0, Tile.Water) > 0;
+                            bool riveraround = area.TilesSurrounding(mwx, mwy, 0, Tile.River) > 0;
                             if (leftb && (wateraround || riveraround))
                             {
                                 area.tiles[mwx, mwy, 0] = Tile.Water;
@@ -109,12 +92,12 @@ namespace Simulation
                                 area.tiles[mwx, mwy, 0] = Tile.PlasticFloor;
                             break;
                         case Tile.PlasticDoor:
-                            bool wallsaround = area.NumberSurrounding(mwx, mwy, 0, Tile.PlasticWall) > 1;
-                            bool floorsaround = area.NumberSurrounding(mwx, mwy, 0, Tile.PlasticFloor) > 0;
+                            bool wallsaround = area.TilesSurrounding(mwx, mwy, 0, Tile.PlasticWall) > 1;
+                            bool floorsaround = area.TilesSurrounding(mwx, mwy, 0, Tile.PlasticFloor) > 0;
                             if (leftb && wallsaround && floorsaround)
                             {
                                 area.tiles[mwx, mwy, 0] = Tile.PlasticDoor;
-                                Colonist.AddDoor(new Tuple<int, int>(mwx, mwy));
+                                Colonist.AddDoor(new XY(mwx, mwy));
                             }
 
                             break;
@@ -123,7 +106,14 @@ namespace Simulation
 
                 }
             }
-            
+
+            MoveCamera();
+            SetLayer();
+
+        }
+
+        void MoveCamera()
+        {
             if (Input.IsKeyPressed(Keys.I))
                 Simulation.pxlratio = Math.Min(4, Simulation.pxlratio + 1);
             if (Input.IsKeyPressed(Keys.K))
@@ -136,7 +126,16 @@ namespace Simulation
                 Camera.Y -= Simulation.tilesize;
             if (Input.IsKeyDown(Keys.Down))
                 Camera.Y += Simulation.tilesize;
+        }
 
+        void SetLayer()
+        {
+            if (Input.IsKeyPressed(Keys.E))
+                Simulation.currentlayer++;
+            if (Input.IsKeyPressed(Keys.Q))
+                Simulation.currentlayer--;
+            Simulation.currentlayer = Math.Max(0, Simulation.currentlayer);
+            Simulation.currentlayer = Math.Min(Simulation.inst.area.tiles.GetUpperBound(2), Simulation.currentlayer);
         }
 
         public void Draw(SpriteBatch sb)

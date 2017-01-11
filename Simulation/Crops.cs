@@ -9,7 +9,7 @@ namespace Simulation
     class Crops
     {
         Area area;
-        static List<Tuple<int, int>> plantedcrops = new List<Tuple<int, int>>();
+        static List<XY> plantedcrops = new List<XY>();
         public static int harvestedcrops = 0;
         float deathtime = 1f;
         public Crops (Area area)
@@ -23,12 +23,12 @@ namespace Simulation
             {
                 for (int i = plantedcrops.Count - 1; i >= 0; i--)
                 {
-                    Tuple<int, int> place = plantedcrops[i];
-                    if (area.tiles[place.Item1, place.Item2, 0] != Tile.Seed)
+                    XY place = plantedcrops[i];
+                    if (area.tiles[place.X, place.Y, 0] != Tile.Seed)
                         continue;
-                    area.tiles[place.Item1, place.Item2, 0] = Tile.Crop;
+                    area.tiles[place.X, place.Y, 0] = Tile.Crop;
                 }
-                plantedcrops = new List<Tuple<int, int>>();
+                plantedcrops = new List<XY>();
             }
         }
         public void DestroyCrops(float overtime)
@@ -36,9 +36,9 @@ namespace Simulation
             if(plantedcrops.Count > 0)
             {
                 var crop = plantedcrops.First();
-                if (area.NumberSurrounding(crop.Item1, crop.Item2, 0, 4) == 0)
+                if (area.TilesSurrounding(crop.X, crop.Y, 0, 4) == 0)
                 {
-                    area.tiles[crop.Item1, crop.Item2, 0] = Tile.TilledLand;
+                    area.tiles[crop.X, crop.Y, 0] = Tile.TilledLand;
                     plantedcrops.RemoveAt(0);
                 }
             }
@@ -46,7 +46,7 @@ namespace Simulation
             new Timer(DestroyCrops, deathtime);
         }
 
-        public static void AddCrop(Tuple<int, int> crop)
+        public static void AddCrop(XY crop)
         {
             plantedcrops.Add(crop);
         }

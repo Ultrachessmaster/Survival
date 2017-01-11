@@ -9,7 +9,7 @@ namespace Simulation
 {
     class EntityHighlight
     {
-        public static string CurrentDesc(List<Entity> entities)
+        public static Entity CurrentEntity(List<Entity> entities)
         {
             var state = Mouse.GetState();
             var cameraposx = state.X / Simulation.pxlratio;
@@ -22,15 +22,11 @@ namespace Simulation
             if (entities == null)
                 Console.WriteLine("Entity list null!");
             if (entities.Count == 0)
-                return "";
+                return null;
             foreach (Entity e in entities)
             {
-                if(e == null)
-                {
-                    Console.WriteLine("Entity null!");
-                }
-                int ex = (int)Math.Floor(e.pos.X / Simulation.tilesize);
-                int ey = (int)Math.Floor(e.pos.Y / Simulation.tilesize);
+                int ex = e.pos.X;
+                int ey = e.pos.Y;
                 if (ex == cameraposx && ey == cameraposy)
                 {
                     currententity = e;
@@ -38,9 +34,9 @@ namespace Simulation
             }
             if(currententity == null)
             {
-                return "";
+                return null;
             }
-            return currententity.Description;
+            return currententity;
         }
     }
 }

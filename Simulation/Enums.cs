@@ -20,4 +20,10 @@ namespace Simulation
         TILES,
         ANIMALS
     }
+    public enum GoalType
+    {
+        HARVESTSEEDS,
+        HARVESTCROPS,
+        TRAVEL
+    }
 }

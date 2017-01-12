@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,10 @@ namespace Simulation
             GetColonists();
             int xtile = Input.MouseTileX();
             int ytile = Input.MouseTileY();
+            var state = Mouse.GetState();
+            int my = state.Y;
 
-            if(Input.IsMouseButtonPressed(0))
+            if (Input.IsMouseButtonPressed(0) && my < (Simulation.windowsize - 128 * 2 ))
             {
                 selectedcol = null;
                 foreach(Colonist c in colonists)

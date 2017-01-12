@@ -94,7 +94,7 @@
     <Compile Include="Input.cs" />
     <Compile Include="Tools\StaticExtension.cs" />
     <Compile Include="Tools\Timer.cs" />
-    <Compile Include="WorldEditor.cs" />
+    <Compile Include="Interaction.cs" />
     <Compile Include="Tools\XY.cs" />
   </ItemGroup>
   <ItemGroup>

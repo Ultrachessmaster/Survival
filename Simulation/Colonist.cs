@@ -47,6 +47,7 @@ namespace Simulation
             StringBuilder sb = new StringBuilder("--- Colonist ---\n");
             sb.AppendLine("Energy: " + energy + " / " + maxenergy);
             sb.AppendLine("Satiation: " + satiation + " / " + maxsatiation);
+            sb.AppendLine("Seeds: " + seeds);
             description = sb.ToString();
         }
 
@@ -119,6 +120,16 @@ namespace Simulation
                         area.tiles[pos.X, pos.Y, 0] = Tile.TilledLand;
                         goals.RemoveAt(0);
                         break;
+                    case GoalType.TILLGROUND:
+                        if(area.tiles[pos.X, pos.Y, 0] == Tile.Vegetation || area.tiles[pos.X, pos.Y, 0] == Tile.Dirt)
+                            area.tiles[pos.X, pos.Y, 0] = Tile.TilledLand;
+                        goals.RemoveAt(0);
+                        break;
+                    case GoalType.PLANTSEEDS:
+                        if (area.tiles[pos.X, pos.Y, 0] == Tile.TilledLand && seeds > 0)
+                            area.tiles[pos.X, pos.Y, 0] = Tile.Seed;
+                        goals.RemoveAt(0);
+                        break;
                 }
             }
             Timer t = new Timer(Action, slowness, enabled);
@@ -153,7 +164,6 @@ namespace Simulation
             if (!map[localdest.X, localdest.Y])
             {
                 Console.WriteLine("Bad coordinate for pathfinding.");
-                Timer t1 = new Timer(Action, slowness, enabled);
                 return;
             }
 

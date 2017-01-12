@@ -37,13 +37,24 @@ namespace Simulation
             {
                 Goal g = new Goal();
                 g.destination = new XY(xtile, ytile);
-                Entity plant = area.GetEntity(g.destination, "Plant");
-                if (plant != null)
+                switch(Interaction.CurrentTool)
                 {
-                    g.goaltype = GoalType.HARVESTSEEDS;
-                } else
-                {
-                    g.goaltype = GoalType.TRAVEL;
+                    case Tool.Hoe:
+                        g.goaltype = GoalType.TILLGROUND;
+                        break;
+                    case Tool.Grab:
+                        if(area.tiles[xtile, ytile, 0] == Tile.Crop)
+                            g.goaltype = GoalType.HARVESTCROPS;
+                        else
+                            g.goaltype = GoalType.HARVESTSEEDS;
+                        
+                        break;
+                    case Tool.Walk:
+                        g.goaltype = GoalType.TRAVEL;
+                        break;
+                    case Tool.PlantSeed:
+                        g.goaltype = GoalType.PLANTSEEDS;
+                        break;
                 }
                 selectedcol.goals.Add(g);
             }

@@ -16,7 +16,7 @@ namespace Simulation
         SpriteBatch spriteBatch;
         SpriteFont font;
         public Area area;
-        WorldEditor we;
+        Interaction we;
         TimeCycle timecycle = new TimeCycle();
         Crops crops;
         ColonistManager colm;
@@ -85,7 +85,7 @@ namespace Simulation
             textbox = Content.Load<Texture2D>("textbox");
             font = Content.Load<SpriteFont>("Font");
             GD = GraphicsDevice;
-            we = new WorldEditor(windowsize);
+            we = new Interaction(windowsize);
             // TODO: use this.Content to load your game content here
         }
 

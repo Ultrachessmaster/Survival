@@ -11,5 +11,6 @@ namespace Simulation
         public const int Hoe = 0;
         public const int Grab = 1;
         public const int Walk = 2;
+        public const int PlantSeed = 3;
     }
 }

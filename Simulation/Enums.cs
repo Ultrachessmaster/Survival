@@ -24,6 +24,8 @@ namespace Simulation
     {
         HARVESTSEEDS,
         HARVESTCROPS,
-        TRAVEL
+        TRAVEL,
+        TILLGROUND,
+        PLANTSEEDS
     }
 }

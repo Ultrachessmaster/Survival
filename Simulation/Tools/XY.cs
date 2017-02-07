@@ -17,6 +17,13 @@ namespace Simulation
             this.Y = Y;
         }
 
+        public float Magnitude ()
+        {
+            double z = Math.Pow(X, 2) + Math.Pow(Y, 2);
+            return (float)Math.Sqrt(z);
+            
+        }
+
         public static XY operator +(XY a, XY b)
         {
             return new XY(a.X + b.X, a.Y + b.Y);

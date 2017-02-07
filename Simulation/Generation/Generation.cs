@@ -12,8 +12,8 @@ namespace Simulation
     {
         public const float waterbiome = 0.2f;
         public const float sandbiome = 0.25f;
-        public const float vegetation = 0.5f;
-        public const float dirtbiome = 0.7f;
+        public const float vegetation = 0.55f;
+        public const float dirtbiome = 0.6f;
         public const float stonebiome = 0.78f;
         public const float snowbiome = 1f;
         static Random r = new Random(Simulation.seed);
@@ -22,21 +22,21 @@ namespace Simulation
             Area area = new Area();
             int[,] map = new int[(int)size.X, (int)size.Y];
             OpenSimplexNoise o = new OpenSimplexNoise(Simulation.seed);
-            var inversescale = 18f;
+            var inversescale = 35f;
             for (int x = 0; x < size.X; x++)
             {
                 for (int y = 0; y < size.Y; y++)
                 {
                     var noisex = (x / size.X) - 0.5f;
                     var noisey = (y / size.Y) - 0.5f;
-                    float heightlarge = ((float)o.Evaluate(inversescale * 0.5f * noisex, inversescale * 0.5f * noisey) * 0.5f) + 0.5f;
-                    float heightmedium = ((float)o.Evaluate(inversescale * 0.35f * noisex, inversescale * 0.35f * noisey) * 0.5f) + 0.5f;
-                    float heightsmall = ((float)o.Evaluate(inversescale * 0.15f * noisex, inversescale * 0.15f * noisey) * 0.5f) + 0.5f;
-                    heightlarge *= 0.5f;
-                    heightmedium *= 0.35f;
-                    heightsmall *= 0.15f;
+                    float heightlarge = ((float)o.Evaluate(inversescale * 0.7f * noisex, inversescale * 0.5f * noisey) * 0.5f) + 0.5f;
+                    float heightmedium = ((float)o.Evaluate(inversescale * 0.2f * noisex, inversescale * 0.35f * noisey) * 0.5f) + 0.5f;
+                    float heightsmall = ((float)o.Evaluate(inversescale * 0.1f * noisex, inversescale * 0.15f * noisey) * 0.5f) + 0.5f;
+                    heightlarge *= 0.7f;
+                    heightmedium *= 0.2f;
+                    heightsmall *= 0.1f;
                     float height = heightlarge + heightmedium + heightsmall;
-                    float scaledheight = (float)Math.Pow(height, 1.5f);
+                    float scaledheight = (float)Math.Pow(height, 1.3f);
                     if (scaledheight <= snowbiome && height > stonebiome)
                     {
                         map[x, y] = Tile.Snow;
@@ -75,7 +75,7 @@ namespace Simulation
                 }
             }
 
-            area.tiles = fullmap;
+            Area.tiles = fullmap;
             area.entities.AddRange(GenerateAnimals(fullmap));
             area.entities.AddRange(GeneratePlants(fullmap, area));
             return area;
@@ -117,12 +117,11 @@ namespace Simulation
                                 }
                             }
                             map[x + xoffset + 3, y] = Tile.PlasticDoor;
-                            Colonist.AddDoor(new XY(x + xoffset + 3, y));
                             map[x + xoffset + 3, y + 1] = Tile.PlasticFloor;
                             map[x + xoffset + 3, y + 2] = Tile.PlasticFloor;
                             area.entities.Add(new Colonist(new XY((x + xoffset + 3), (y + 3)), area));
-                            //Simulation.AddEntity(new Colonist(new Vector2((x + xoffset + 1) * Simulation.tilesize, (y + 3) * Simulation.tilesize)));
-                            //Simulation.AddEntity(new Colonist(new Vector2((x + xoffset + 5) * Simulation.tilesize, (y + 3) * Simulation.tilesize)));
+                            area.entities.Add(new Colonist(new XY((x + xoffset + 1), (y + 3)), area));
+                            area.entities.Add(new Colonist(new XY((x + xoffset + 5), (y + 3)), area));
                             Camera.X = (x + xoffset - 10) * Simulation.tilesize;
                             Camera.Y = (y - 10) * Simulation.tilesize;
                             foundplace = true;

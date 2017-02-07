@@ -10,24 +10,22 @@ namespace Simulation
 {
     class Colonist : Entity
     {
-        float energy = 200;
-        float maxenergy = 200;
-        float satiation = 24 * 21;
-        float maxsatiation = 24 * 21;
+        float satiation = 24 * 12;
+        float maxsatiation = 24 * 12;
+        float water = 24 * 8;
+        float maxwater = 24 * 8;
         public const int sleephour = 22;
         public const int wakehour = 6;
-        const int longestdist = 35;
-        float slowness = 1f;
-        int speed = 8;
+        const int longestdist = 100;
+        const float slowness = 0.001f;
         float movementfoodcost = 0.5f;
         float plantingfoodcost = 0.5f;
-        int hungry = 300;
-        int seeds = 0;
         public List<Goal> goals = new List<Goal>();
         List<XY> places = new List<XY>();
         static List<XY> doors = new List<XY>();
         public static int numcolonists;
         Area area;
+
         public Colonist (XY pos, Area area)
         {
             this.pos = pos;
@@ -37,7 +35,7 @@ namespace Simulation
             update = upd;
             tag = "Colonist";
             tex = TextureAtlas.SPRITES;
-            Timer t = new Timer(Action, 1f, enabled);
+            Timer t = new Timer(Action, slowness, enabled);
             Timer t1 = new Timer(Weaken, 1f, enabled);
             UpdateDescription();
         }
@@ -45,47 +43,22 @@ namespace Simulation
         public void UpdateDescription()
         {
             StringBuilder sb = new StringBuilder("--- Colonist ---\n");
-            sb.AppendLine("Energy: " + energy + " / " + maxenergy);
             sb.AppendLine("Satiation: " + satiation + " / " + maxsatiation);
-            sb.AppendLine("Seeds: " + seeds);
+            sb.AppendLine("Water: " + water + " / " + maxwater);
             description = sb.ToString();
         }
 
         public void upd (GameTime g)
         {
-            if (satiation <= 0)
+            if (satiation <= 0 || water <= 0)
                 enabled = new RefWrapper<bool>(false);
-            if(satiation <= hungry && Crops.harvestedcrops > 0)
-            {
-                Crops.harvestedcrops--;
-                satiation += 4;
-            }
             UpdateDescription();
-        }
-
-
-        void FindAllCrops ()
-        {
-            places = new List<XY>();
-            int lowerx = pos.X - longestdist;
-            int higherx = pos.X + longestdist;
-            int lowery = pos.Y - longestdist;
-            int highery = pos.Y + longestdist;
-            for (int x = lowerx; x < higherx; x++)
-            {
-                for (int y = lowery; y < highery; y++)
-                {
-                    if (Simulation.inst.area.tiles[x, y, 0] == Tile.TilledLand || Simulation.inst.area.tiles[x, y, 0] == Tile.Crop)
-                    {
-                        places.Add(new XY(x, y));
-                    }
-                }
-            }
         }
 
         void Weaken(float overtime)
         {
             satiation--;
+            water -= 4;
             Timer t = new Timer(Weaken, 1f, enabled);
         }
 
@@ -97,37 +70,83 @@ namespace Simulation
                 return;
             }
             Goal goal = goals.First();
-            if(!pos.Equals(goal.destination))
+            bool atpoint = (pos - goal.destination).Magnitude() <= 1;
+            if(!pos.Equals(goal.destination) && !atpoint)
                 GoTo(goal.destination);
             else
             {
                 switch (goal.goaltype)
                 {
                     case GoalType.HARVESTSEEDS:
-                        Entity plant = area.GetEntity(pos, "Plant");
+                        Entity plant = area.GetEntity(goal.destination, "Plant");
+                        if (plant == null)
+                        {
+                            goals.RemoveAt(0);
+                            break;
+                        }
                         area.entities.Remove(plant);
-                        seeds++;
-                        energy--;
+                        Inventory.AddItem(ItemType.SEEDS);
                         satiation -= plantingfoodcost;
                         goals.RemoveAt(0);
                         break;
-                    case GoalType.TRAVEL:
-                        goals.RemoveAt(0);
-                        break;
                     case GoalType.HARVESTCROPS:
-                        if (area.tiles[pos.X, pos.Y, 0] == Tile.Crop)
-                            Crops.harvestedcrops++;
-                        area.tiles[pos.X, pos.Y, 0] = Tile.TilledLand;
+                        if (Area.tiles[goal.destination.X, goal.destination.Y, 0] == Tile.Crop)
+                        {
+                            Inventory.AddItem(ItemType.CROPS);
+                            Inventory.AddItem(ItemType.SEEDS);
+                            Inventory.AddItem(ItemType.SEEDS);
+                            Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.TilledLand;
+                        }
                         goals.RemoveAt(0);
                         break;
                     case GoalType.TILLGROUND:
-                        if(area.tiles[pos.X, pos.Y, 0] == Tile.Vegetation || area.tiles[pos.X, pos.Y, 0] == Tile.Dirt)
-                            area.tiles[pos.X, pos.Y, 0] = Tile.TilledLand;
+                        if(Area.tiles[goal.destination.X, goal.destination.Y, 0] == Tile.Vegetation || Area.tiles[goal.destination.X, goal.destination.Y, 0] == Tile.Dirt)
+                            Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.TilledLand;
                         goals.RemoveAt(0);
                         break;
-                    case GoalType.PLANTSEEDS:
-                        if (area.tiles[pos.X, pos.Y, 0] == Tile.TilledLand && seeds > 0)
-                            area.tiles[pos.X, pos.Y, 0] = Tile.Seed;
+                    case GoalType.MINE:
+                        if(Area.tiles[goal.destination.X, goal.destination.Y, 0] == Tile.Stone)
+                        {
+                            Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.Dirt;
+                            Inventory.AddItem(ItemType.STONE);
+                        }
+                        goals.RemoveAt(0);
+                        break;
+                    case GoalType.ITEM:
+                        ItemType it = Inventory.itemselected;
+                        switch(it)
+                        {
+                            case ItemType.SEEDS:
+                                if (Area.tiles[goal.destination.X, goal.destination.Y, 0] == Tile.TilledLand)
+                                {
+                                    Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.Seed;
+                                    Crops.AddCrop(goal.destination);
+                                    Inventory.RemoveItem(ItemType.SEEDS);
+                                }
+                                break;
+                            case ItemType.STONEBUCKET:
+                                if (Area.tiles[goal.destination.X, goal.destination.Y, 0] == Tile.Water)
+                                {
+                                    Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.Dirt;
+                                    Inventory.RemoveItem(ItemType.STONEBUCKET);
+                                    Inventory.AddItem(ItemType.WATERBUCKET);
+                                }
+                                break;
+                            case ItemType.WATERBUCKET:
+                                Inventory.RemoveItem(ItemType.WATERBUCKET);
+                                Inventory.AddItem(ItemType.STONEBUCKET);
+                                water += 80;
+                                water = Math.Min(water, maxwater);
+                                break;
+                            case ItemType.CROPS:
+                                Inventory.RemoveItem(ItemType.CROPS);
+                                satiation += 30;
+                                satiation = Math.Min(satiation, maxsatiation);
+                                break;
+
+                        }
+                        if(Inventory.ItemCount(Inventory.itemselected) == 0)
+                            Inventory.itemselected = ItemType.NONE;
                         goals.RemoveAt(0);
                         break;
                 }
@@ -141,7 +160,7 @@ namespace Simulation
             {
                 return;
             }
-            int[,,] tiles = Simulation.inst.area.tiles;
+            int[,,] tiles = Area.tiles;
             int xlower = pos.X - longestdist;
             int ylower = pos.Y - longestdist;
             int xhigher = pos.X + longestdist;
@@ -161,14 +180,14 @@ namespace Simulation
                 }
             }
             var localdest = -pos + longestdist + dest;
-            if (!map[localdest.X, localdest.Y])
+            AStar a = new AStar(new XY(longestdist, longestdist), localdest, map);
+            var path = a.CalculatePath();
+            if(path == null)
             {
-                Console.WriteLine("Bad coordinate for pathfinding.");
+                goals.RemoveAt(0);
                 return;
             }
 
-            AStar a = new AStar(new XY(longestdist, longestdist), localdest, map);
-            var path = a.CalculatePath();
             var nearestdest = path.First();
             nearestdest += pos;
             nearestdest -= longestdist;
@@ -200,7 +219,7 @@ namespace Simulation
                 dir.X = 0;
                 dir.Y = Math.Sign(dir.Y);
             }
-            int tile = area.tiles[(pos + dir).X, (pos + dir).Y, 0];
+            int tile = Area.tiles[(pos + dir).X, (pos + dir).Y, 0];
             if (tile != Tile.Water && tile != Tile.PlasticWall && tile != Tile.River && dir != XY.Zero)
             {
                 TakeMove(dir);
@@ -217,7 +236,7 @@ namespace Simulation
                     newdir.Y = 0;
                     newdir.X = Math.Sign(newdir.X);
                 }
-                tile = area.tiles[(pos + newdir).X, (pos + newdir).Y, 0];
+                tile = Area.tiles[(pos + newdir).X, (pos + newdir).Y, 0];
                 if (tile != Tile.Water && tile != Tile.River && tile != Tile.PlasticWall)
                 {
                     TakeMove(newdir);
@@ -228,43 +247,7 @@ namespace Simulation
         void TakeMove(XY dir)
         {
             pos += dir;
-            energy--;
             satiation -= movementfoodcost;
-            slowness = maxenergy / (speed * energy + 2);
-        }
-
-        void Sleep ()
-        {
-            /*var position = new XY((int)pos.X / Simulation.tilesize, (int)pos.Y / Simulation.tilesize);
-            var door = FindClosest(doors, position);
-            if(!atdoor)
-            {
-                Move(new Vector2(door.X * Simulation.tilesize, door.Y * Simulation.tilesize));
-                position = new XY((int)pos.X / Simulation.tilesize, (int)pos.Y / Simulation.tilesize);
-                if (position.Equals(door))
-                    atdoor = true;
-            } else
-            {
-                var destination = new XY(door.X, door.Y + 3);
-                Move(new Vector2(destination.X * Simulation.tilesize, destination.Y * Simulation.tilesize));
-                position = new XY((int)pos.X / Simulation.tilesize, (int)pos.Y / Simulation.tilesize);
-                if(position.Equals(description))
-                {
-                    energy = maxenergy;
-                }
-
-            }*/
-            
-        }
-
-        public static void AddDoor(XY door)
-        {
-            doors.Add(door);
-        }
-
-        public static void RemoveDoor(XY door)
-        {
-            doors.Remove(door);
         }
 
         XY FindClosest(List<XY> places, XY place)

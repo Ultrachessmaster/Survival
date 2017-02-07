@@ -187,14 +187,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Simulation.exe" size="202720">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Simulation.exe" size="206816">
       <assemblyIdentity name="Simulation" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>XbmcvDEjHS5gFxXQMzD4uqbq8PqeJsUXpJshCgCDwdI=</dsig:DigestValue>
+        <dsig:DigestValue>Ktk3j/aHxofz9AexRzTSMKdB9AF77dd0aFFOU2xOqSU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -216,6 +216,15 @@
       <dsig:DigestValue>vJT8nHAMAtiQ0u0Q25QshkDQgs9sfMXjrcMsH4jA5no=</dsig:DigestValue>
     </hash>
   </file>
+  <file name="Content\selection.xnb" size="341">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>oTTr01XqofRcyLJdOZLzUdTKwLxZY371hnOcxrFyVrc=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="Content\spritemap.xnb" size="4181">
     <hash>
       <dsig:Transforms>
@@ -231,7 +240,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>M5SMLL70qQuKeItm+6NrutZhOqtYKZOEpklzrzddOyM=</dsig:DigestValue>
+      <dsig:DigestValue>HHTGu9e6y7nViV43VMM6JDLLo5lc1ovvfFlg7yeA4QU=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\texturemap.xnb" size="4181">
@@ -249,7 +258,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>1Pqc1Expo32fsC6AOegAmLaYVpZG0vb57d1McZ1bj4c=</dsig:DigestValue>
+      <dsig:DigestValue>Tkf4bLNmcMFy4oOFCYYgpZjsohg6rUU89LR0LErcugE=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Icon.ico" size="147541">

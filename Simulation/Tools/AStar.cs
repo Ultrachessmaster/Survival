@@ -48,8 +48,10 @@ namespace Simulation
             List<Node> beenthere = new List<Node>();
             frontier.Enqueue(pos, 0);
             bool atend = false;
+            int i = 0;
             while (frontier.Count != 0)
             {
+                i++;
                 var current = frontier.Dequeue();
                 var neighbors = Neighbors(map, current);
                 for (int j = 0; j < neighbors.Length; j++)
@@ -84,6 +86,8 @@ namespace Simulation
                         }
                     }
                 }
+                if (i > 250)
+                    return null;
             }
 
             Node n = dest;

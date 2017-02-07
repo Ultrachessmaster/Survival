@@ -10,17 +10,12 @@ namespace Simulation
 {
     public class Area
     {
-        public int[,,] tiles;
+        public static int[,,] tiles;
         public List<Entity> entities = new List<Entity>();
 
         public void SetMap(int[,,] t)
         {
             tiles = t;
-        }
-
-        public void Upd()
-        {
-            
         }
         public int TilesSurrounding(int x, int y, int z, int type)
         {

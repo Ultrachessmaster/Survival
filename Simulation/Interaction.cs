@@ -11,80 +11,41 @@ namespace Simulation
 {
     class Interaction
     {
-        public Context context { get { return con; } }
-        List<int> farmtools = new List<int>();
         int screenheight;
-        public static int CurrentTool { get { return currenttool; } }
-        static int currenttool = 0;
-        int menutiles;
+        static Menu menu;
+        public static Tool CurrentTool { get { return menu.tool; } }
         int textboxborder;
-        bool placingtiles = true;
-        Menu menu;
-        Context con = Context.FARM;
+        int previouswheelv = 0;
 
         public Interaction (int screenheight)
         {
             this.screenheight = screenheight;
-            farmtools = new List<int>();
-            farmtools.Add(Tool.Hoe);
-            farmtools.Add(Tool.Grab);
-            farmtools.Add(Tool.Walk);
-            farmtools.Add(Tool.PlantSeed);
-            menu = new Menu(farmtools, screenheight);
-            menutiles = screenheight - (Simulation.tilesize * 2);
+            menu = new Menu(screenheight);
             textboxborder = screenheight - (Simulation.tilesize * 16);
         }
 
-        public void Update (Area area)
+        public void Update()
         {
-            var mstate = Mouse.GetState();
-            var mwx = Input.MouseTileX();
-            var mwy = Input.MouseTileX();
-            var mx = mstate.X;
-            var my = mstate.Y;
-            
-            var left1stb = Input.IsMouseButtonPressed(0);
-            var right1stb = Input.IsMouseButtonPressed(1);
-            var leftb = mstate.LeftButton == ButtonState.Pressed;
-            var rightb = mstate.RightButton == ButtonState.Pressed;
-            if(Input.IsKeyDown(Keys.F))
-                con = Context.FARM;
-            if (Input.IsKeyDown(Keys.B))
-                con = Context.BUILDING;
-            if (my >= menutiles && leftb)
-            {
-                var idx = Math.Min(mx / (Simulation.tilesize * 2), menu.NumTiles - 1);
-                currenttool = menu.ToolSelected(idx);
-            }
-            if(my < textboxborder)
-            {
-                switch (con)
-                {
-                    case Context.FARM:
-                        menu = new Menu(farmtools, screenheight);
-                        placingtiles = true;
-                        break;
-                }
-            }
+            menu.Update();
 
             MoveCamera();
             SetLayer();
-
         }
 
         void MoveCamera()
         {
-            if (Input.IsKeyPressed(Keys.I))
-                Simulation.pxlratio = Math.Min(4, Simulation.pxlratio + 1);
-            if (Input.IsKeyPressed(Keys.K))
-                Simulation.pxlratio = Math.Max(1, Simulation.pxlratio - 1);
-            if (Input.IsKeyDown(Keys.Right))
+            var sw = Mouse.GetState().ScrollWheelValue;
+            Simulation.pxlratio += ((sw - previouswheelv) / 120);
+            previouswheelv = sw;
+            Simulation.pxlratio = Math.Min(4, Simulation.pxlratio);
+            Simulation.pxlratio = Math.Max(1, Simulation.pxlratio);
+            if (Input.IsKeyDown(Keys.D))
                 Camera.X += Simulation.tilesize;
-            if (Input.IsKeyDown(Keys.Left))
+            if (Input.IsKeyDown(Keys.A))
                 Camera.X -= Simulation.tilesize;
-            if (Input.IsKeyDown(Keys.Up))
+            if (Input.IsKeyDown(Keys.W))
                 Camera.Y -= Simulation.tilesize;
-            if (Input.IsKeyDown(Keys.Down))
+            if (Input.IsKeyDown(Keys.S))
                 Camera.Y += Simulation.tilesize;
         }
 
@@ -95,7 +56,7 @@ namespace Simulation
             if (Input.IsKeyPressed(Keys.Q))
                 Simulation.currentlayer--;
             Simulation.currentlayer = Math.Max(0, Simulation.currentlayer);
-            Simulation.currentlayer = Math.Min(Simulation.inst.area.tiles.GetUpperBound(2), Simulation.currentlayer);
+            Simulation.currentlayer = Math.Min(Area.tiles.GetUpperBound(2), Simulation.currentlayer);
         }
 
         public void Draw(SpriteBatch sb)

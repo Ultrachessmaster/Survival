@@ -33,3 +33,7 @@ C:\Users\oldro\Programming Projects\Simulation\Simulation\obj\x86\Release\Simula
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Content\textbox.xnb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Content\animalmap.xnb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Content\selection.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Content\toolmap.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Priority Queue.dll
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Release\Priority Queue.pdb

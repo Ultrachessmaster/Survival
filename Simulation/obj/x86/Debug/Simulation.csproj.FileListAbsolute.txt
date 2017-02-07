@@ -36,3 +36,4 @@ C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Priority Queue.dll
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Priority Queue.pdb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\toolmap.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\selection.xnb

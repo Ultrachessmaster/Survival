@@ -11,38 +11,61 @@ namespace Simulation
     class Menu
     {
         Texture2D tex;
-        List<int> tools;
+        Texture2D selectionbox;
+        List<Button> tools = new List<Button>();
+        Button clearcraftinglist;
+        Button craft;
         int screenheight;
-        public int NumTiles { get { return tools.Count; } }
+        public Tool tool = Tool.Hoe;
 
-        public Menu (List<int> tools, int screenheight)
+        public Menu (int screenheight)
         {
-            this.tools = tools;
+            XY size = new XY(2 * Simulation.tilesize, 2 * Simulation.tilesize);
+            XY pos = new XY(2, screenheight - 2 - size.Y);
+            XY offset = new XY(2 * Simulation.tilesize, 0);
+            tools.Add(new Button(size, pos, SetTool, (int)Tool.Hoe, (int)Tool.Hoe));
+            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.Grab, (int)Tool.Grab));
+            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.PlantSeed, (int)Tool.PlantSeed));
+            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.Pickaxe, (int)Tool.Pickaxe));
+            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.Nothing, (int)Tool.Nothing));
             this.screenheight = screenheight;
             tex = Simulation.CM.Load<Texture2D>("toolmap");
+            selectionbox = Simulation.CM.Load<Texture2D>("selection");
+            clearcraftinglist = new Button(size, new XY(700, 930), Inventory.ClearCraftingList, 6, 0);
+            craft = new Button(size, new XY(700 + size.X + 4, 930), Inventory.Craft, 7, 0);
+        }
+
+        public void Update()
+        {
+            foreach(Button b in tools)
+            {
+                b.Update();
+            }
+            clearcraftinglist.Update();
+            craft.Update();
         }
 
         public void Draw(SpriteBatch sb)
         {
             for(int i = 0; i < tools.Count; i++)
             {
-                int idx = tools[i];
+                Button btn = tools[i];
+                btn.Draw(sb, tex);
                 var yindex = screenheight - (Simulation.tilesize * 2);
-
                 Rectangle destrect = new Rectangle(i * Simulation.tilesize * 2 + 2, yindex - 2, Simulation.tilesize * 2, Simulation.tilesize * 2);
 
-                int xsource = (idx % (tex.Width / Simulation.tilesize)) * Simulation.tilesize;
-                int ysource = (int)Math.Floor((decimal)(idx) / (tex.Width / Simulation.tilesize)) * Simulation.tilesize;
-
-                Rectangle sourcerect = new Rectangle(xsource, ysource, Simulation.tilesize, Simulation.tilesize);
-
-                sb.Draw(tex, destrect, sourcerect, Color.White);
+                if (btn.id == (int)tool)
+                {
+                    sb.Draw(selectionbox, destrect, Color.Gold);
+                }
             }
+            clearcraftinglist.Draw(sb, tex);
+            craft.Draw(sb, tex);
         }
 
-        public int ToolSelected(int idx)
+        void SetTool(int i)
         {
-            return tools[idx];
+            tool = (Tool)i;
         }
     }
 }

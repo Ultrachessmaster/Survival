@@ -12,19 +12,11 @@ namespace Simulation
         float time;
         int currenttime;
         RefWrapper<bool> enabled;
-        /*public Timer(Action<int> act, float time, int argument = 0)
-        {
-            action = act;
-            this.time = time;
-            currenttime = TimeCycle.TotalHours;
-            arg = argument;
-            Simulation.Timers.Add(this);
-        }*/
 
-        public Timer(Action<float> act, float time, RefWrapper<bool> enabled = null)
+        public Timer(Action<float> act, float hours, RefWrapper<bool> enabled = null)
         {
             action = act;
-            this.time = time;
+            time = hours;
             currenttime = TimeCycle.Minutes;
             this.enabled = enabled;
             Simulation.Timers.Add(this);

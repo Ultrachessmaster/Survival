@@ -8,18 +8,20 @@ using Microsoft.Xna.Framework.Input;
 namespace Simulation
 {
     class Input {
-        static AccessOnce<Keys, bool> keys = new AccessOnce<Keys, bool>(true, false);
-        static AccessOnce<int, bool> mouseb = new AccessOnce<int, bool>(true, false);
-        public static bool IsKeyPressed (Keys key) {
+        static AccessOnce<Keys, bool> keyaccess = new AccessOnce<Keys, bool>(true, false);
+        static AccessOnce<int, bool> mousebaccess = new AccessOnce<int, bool>(true, false);
+        static Dictionary<Keys, bool> keys = new Dictionary<Keys, bool>();
+        static Dictionary<int, bool> mousebts = new Dictionary<int, bool>();
+        static bool KeyPressed (Keys key) {
             KeyboardState ks = Keyboard.GetState();
 
             if (ks.IsKeyUp(key))
             {
-                keys.Set(key, false);
+                keyaccess.Set(key, false);
             }
 
             if (ks.IsKeyDown(key)) {
-                return keys.Access(key);
+                return keyaccess.Access(key);
             }
             
             return false;
@@ -31,7 +33,7 @@ namespace Simulation
             return ks.IsKeyDown(key);
         }
 
-        public static bool IsMouseButtonPressed(int button)
+        static bool MouseButtonPressed(int button)
         {
             var state = Mouse.GetState();
             ButtonState buttonpressed = ButtonState.Released;
@@ -42,13 +44,13 @@ namespace Simulation
                 case 2: buttonpressed = state.MiddleButton; break;
             }
             if (buttonpressed == ButtonState.Released)
-                mouseb.Set(button, false);
+                mousebaccess.Set(button, false);
             
             if(buttonpressed == ButtonState.Pressed)
-                return mouseb.Access(button);
-
+                return mousebaccess.Access(button);
+            var st = Mouse.GetState();
             return false;
-
+            
         }
 
         public static int MouseTileX()
@@ -61,5 +63,25 @@ namespace Simulation
             var mstate = Mouse.GetState();
             return Math.Max(((mstate.Y / Simulation.pxlratio) + Camera.Y) / Simulation.tilesize, 0);
         }
+
+        public static void Update()
+        {
+            keys = new Dictionary<Keys, bool>();
+            mousebts = new Dictionary<int, bool>();
+        }
+
+        public static bool IsKeyPressed(Keys key)
+        {
+            if(!keys.ContainsKey(key))
+                keys[key] = KeyPressed(key);
+            return keys[key];
+        }
+
+        public static bool IsMouseButtonPressed(int button)
+        {
+            if (!mousebts.ContainsKey(button))
+                mousebts[button] = MouseButtonPressed(button);
+            return mousebts[button];
+        } 
     }
 }

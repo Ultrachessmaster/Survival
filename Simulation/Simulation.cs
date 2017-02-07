@@ -16,7 +16,7 @@ namespace Simulation
         SpriteBatch spriteBatch;
         SpriteFont font;
         public Area area;
-        Interaction we;
+        Interaction interaction;
         TimeCycle timecycle = new TimeCycle();
         Crops crops;
         ColonistManager colm;
@@ -31,6 +31,7 @@ namespace Simulation
         private Texture2D spriteatlas;
         private Texture2D animalatlas;
         private Texture2D textbox;
+        private Texture2D selectionbox;
         public static Simulation inst;
 
         public static ContentManager CM { get; internal set; }
@@ -38,9 +39,11 @@ namespace Simulation
 
         public static int seed = (int)DateTime.Now.Ticks;
 
+        XY previousmousepos;
+
         public Simulation()
         {
-            windowsize = 25 * tilesize * pxlratio;
+            windowsize = 30 * tilesize * pxlratio;
             
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = windowsize;
@@ -83,9 +86,11 @@ namespace Simulation
             spriteatlas = Content.Load<Texture2D>("spritemap");
             animalatlas = Content.Load<Texture2D>("animalmap");
             textbox = Content.Load<Texture2D>("textbox");
+            selectionbox = Content.Load<Texture2D>("selection");
             font = Content.Load<SpriteFont>("Font");
+
             GD = GraphicsDevice;
-            we = new Interaction(windowsize);
+            interaction = new Interaction(windowsize);
             // TODO: use this.Content to load your game content here
         }
 
@@ -109,22 +114,26 @@ namespace Simulation
             //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             //    Exit();
             var state = Mouse.GetState();
-            updatesperframe += ( (state.ScrollWheelValue - initscrollwheel) / 120);
-            updatesperframe = Math.Max(updatesperframe, 0);
-            updatesperframe = Math.Min(updatesperframe, 100);
+            if (Input.IsKeyPressed(Keys.I))
+                updatesperframe++;
+            if (Input.IsKeyPressed(Keys.K))
+                updatesperframe--;
+            updatesperframe = Math.Max(updatesperframe, 1);
+            updatesperframe = Math.Min(updatesperframe, 10);
             initscrollwheel = state.ScrollWheelValue;
             for(int i = 0; i < updatesperframe; i++)
             {
                 SimUpd(gameTime);
             }
             
-            we.Update(area);
+            interaction.Update();
+            Inventory.Update();
+            Input.Update();
             base.Update(gameTime);
         }
 
         public void SimUpd (GameTime gameTime)
         {
-            area.Upd();
             crops.Upd();
             
             timecycle.Update();
@@ -164,7 +173,7 @@ namespace Simulation
             GraphicsDevice.Clear(Color.Black);
             var dm = GraphicsDevice.DisplayMode;
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.NonPremultiplied);
-            int[,,] tilemap = area.tiles;
+            int[,,] tilemap = Area.tiles;
             var scale = 2.5f;
             var alpha = ((float)Math.Sin( 2 * (TimeCycle.TotalHours / 24f)*Math.PI - (Math.PI / 2)) / scale) + 1 - (1f/scale);
             Color darkness = new Color(255, 255, 255, alpha);
@@ -225,14 +234,19 @@ namespace Simulation
                     }
                 }
             }
+            var colonist = colm.SelectedColonist;
+            if(colonist != null)
+            {
+                var pos = colonist.pos;
+                Rectangle desrect = new Rectangle((pos.X * tilesize - Camera.X) * pxlratio, (pos.Y * tilesize - Camera.Y) * pxlratio, tilesize * pxlratio, tilesize * pxlratio);
+                spriteBatch.Draw(selectionbox, desrect, Color.Gold);
+            }
+
             spriteBatch.DrawString(font, "Time: " + TimeCycle.Hours + ":" + (TimeCycle.Minutes - (TimeCycle.Hours * 60)), Vector2.Zero, Color.White);
             spriteBatch.DrawString(font, "Time Scale: " + updatesperframe, new Vector2(0, 20f), Color.White);
             spriteBatch.DrawString(font, "Colonists: " + Colonist.numcolonists, new Vector2(0, 40f), Color.White);
-            spriteBatch.DrawString(font, "Crops: " + Crops.harvestedcrops, new Vector2(0, 60f), Color.White);
 
             spriteBatch.Draw(textbox, new Rectangle(0, windowsize - (tilesize * 16), windowsize, tilesize * 16), Color.White);
-            spriteBatch.DrawString(font, "F: Farm", new Vector2(3, windowsize - (tilesize * 16) + 1), Color.White);
-            spriteBatch.DrawString(font, "B: Building", new Vector2(3, windowsize - (tilesize * 16) + 18), Color.White);
             var ent = EntityHighlight.CurrentEntity(area.entities);
             if(ent != null)
             {
@@ -240,7 +254,27 @@ namespace Simulation
             }
             spriteBatch.DrawString(font, "X: " + Input.MouseTileX().ToString(), new Vector2(458, windowsize - (tilesize * 16) + 1), Color.White);
             spriteBatch.DrawString(font, "Y: " + Input.MouseTileY().ToString(), new Vector2(458, windowsize - (tilesize * 16) + 19), Color.White);
-            we.Draw(spriteBatch);
+            var items = new List<ItemType>(Inventory.items.Keys);
+            var amounts = new List<int>(Inventory.items.Values);
+            for (int i = 0; i < Inventory.items.Count; i++)
+            {
+                if(amounts[i] == 1)
+                    spriteBatch.DrawString(font, items[i].ToString(), new Vector2(Inventory.xpos, Inventory.ypos + i * 18), Color.White);
+                else
+                    spriteBatch.DrawString(font, items[i] + " x " + amounts[i], new Vector2(Inventory.xpos, Inventory.ypos + i * 18), Color.White);
+            }
+                
+
+            for (int i = 0; i < Inventory.craftinglist.Count; i++)
+            {
+                var it = Inventory.craftinglist[i];
+                spriteBatch.DrawString(font, it.ToString(), new Vector2(Inventory.xpos + 155, Inventory.ypos + i * 18), Color.White);
+            }
+
+            interaction.Draw(spriteBatch);
+            Inventory.Draw(spriteBatch, selectionbox);
+
+            colm.Draw(spriteBatch, selectionbox);
 
             spriteBatch.End();
 

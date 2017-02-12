@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SourceFile>C:/Users/oldro/Programming Projects/Simulation/Simulation/Content/textbox.png</SourceFile>
-  <SourceTime>2017-02-04T23:46:21.7108459-07:00</SourceTime>
+  <SourceTime>2017-02-06T19:27:10.4521476-07:00</SourceTime>
   <DestFile>C:/Users/oldro/Programming Projects/Simulation/Simulation/Content/bin/Windows/textbox.xnb</DestFile>
-  <DestTime>2017-02-05T00:00:11.8876927-07:00</DestTime>
+  <DestTime>2017-02-06T19:27:13.921443-07:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2016-03-30T00:36:08-06:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

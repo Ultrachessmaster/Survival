@@ -53,6 +53,11 @@ namespace Simulation
         {
             return (a.X != b.X || a.Y != b.Y);
         }
+        public static float Distance(XY a, XY b)
+        {
+            var distsq = Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2);
+            return (float)Math.Sqrt(distsq);
+        }
 
     }
 }

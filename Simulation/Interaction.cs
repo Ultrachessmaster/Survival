@@ -13,7 +13,7 @@ namespace Simulation
     {
         int screenheight;
         static Menu menu;
-        public static Tool CurrentTool { get { return menu.tool; } }
+        public static Tool CurrentTool { get { return menu.tool; } set { menu.tool = value; } }
         int textboxborder;
         int previouswheelv = 0;
 

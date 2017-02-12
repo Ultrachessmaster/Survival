@@ -28,24 +28,58 @@ namespace Simulation
         public string Tag { get { return tag; } }
         protected string tag = "";
 
-        public string Description { get { return description; } }
-        protected string description = "";
+        public string Description { get { if (GetDescription != null) { return GetDescription(); } else return ""; } }
+        protected Func<string> GetDescription;
 
         protected bool visible = true;
 
         public Action<GameTime> Update { get { return update; } }
         protected Action<GameTime> update;
 
-        public Action<SpriteBatch, int, Texture2D, Rectangle, Color> Draw { get { return draw; } }
-        protected Action<SpriteBatch, int, Texture2D, Rectangle, Color> draw;
+        public Action<SpriteBatch, int, int, Texture2D, Texture2D, Color> Draw { get { return draw; } }
+        protected Action<SpriteBatch, int, int, Texture2D, Texture2D, Color> draw;
 
-        protected void Drw (SpriteBatch sb, int pxlratio, Texture2D tex, Rectangle sourcerec, Color col)
+        protected void Drw (SpriteBatch sb, int pxlratio, int tilesize, Texture2D spriteatlas, Texture2D animalatlas, Color col)
         {
-            if (visible)
+            if (enabled.Value)
             {
-                sb.Draw(tex, new Rectangle((pos.X * Simulation.tilesize - Camera.X) * pxlratio, (pos.Y * Simulation.tilesize - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerec, col);
+                int texwidth = 0;
+                int texheight = 0;
+                switch (tex)
+                {
+                    case TextureAtlas.SPRITES:
+                        texwidth = spriteatlas.Width;
+                        texheight = spriteatlas.Height;
+                        break;
+                    case TextureAtlas.ANIMALS:
+                        texwidth = animalatlas.Width;
+                        texheight = animalatlas.Height;
+                        break;
 
+                }
+                int xsource = (Sprite % (texwidth / tilesize)) * tilesize;
+                int ysource = (int)Math.Floor((decimal)(Sprite) / (texheight / tilesize)) * tilesize;
+
+                Rectangle sourcerect = new Rectangle(xsource, ysource, tilesize, tilesize);
+
+                if (visible)
+                {
+                    switch (tex)
+                    {
+                        case TextureAtlas.SPRITES:
+                            sb.Draw(spriteatlas, new Rectangle((pos.X * Simulation.tilesize - Camera.X) * pxlratio, (pos.Y * Simulation.tilesize - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerect, col);
+                            break;
+                        case TextureAtlas.ANIMALS:
+                            sb.Draw(animalatlas, new Rectangle((pos.X * Simulation.tilesize - Camera.X) * pxlratio, (pos.Y * Simulation.tilesize - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerect, col);
+                            break;
+
+                    }
+                }
+                    
+                
+                    
             }
+            
         }
     }
 }

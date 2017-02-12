@@ -14,9 +14,10 @@ namespace Simulation
         public static List<ItemType> craftinglist = new List<ItemType>();
         static List<ItemType> bucketrecipe = new List<ItemType>();
         static Dictionary<ItemType, Button> btns = new Dictionary<ItemType, Button>();
-        public const int xpos = 4;
+        public const int xpos = 540;
         public const int ypos = 833;
-        public static ItemType itemselected = ItemType.NONE;
+        public const int craftingoffset = 155;
+        public static ItemType selecteditem = ItemType.NONE;
 
         public static void Craft(int j)
         {
@@ -43,7 +44,7 @@ namespace Simulation
             else
             {
                 items.Add(item, 1);
-                Button b = new Button(new XY(160, 18), new XY(xpos, ypos + (items.Count - 1) * 18), AddCraftingItem, SelectItem, 0, (int)item);
+                Button b = new Button(new XY(160, 18), new XY(xpos, ypos + (items.Count - 1) * 18), SelectItem, AddCraftingItem, 0, (int)item);
                 btns.Add(item, b);
                 ReOrderButtons();
             }
@@ -80,13 +81,13 @@ namespace Simulation
                     btns.Remove(itt);
                     ReOrderButtons();
                 }
-                    
             }
         }
 
         static void SelectItem(int it)
         {
-            itemselected = (ItemType)it;
+            selecteditem = (ItemType)it;
+            Interaction.CurrentTool = Tool.None;
         }
 
         public static void ClearCraftingList(int i)
@@ -121,11 +122,14 @@ namespace Simulation
 
         public static void Draw(SpriteBatch sb, Texture2D tex)
         {
-            if (itemselected == ItemType.NONE)
+            if (selecteditem == ItemType.NONE)
                 return;
-            XY pos = btns[itemselected].pos;
-            XY size = btns[itemselected].size;
-            sb.Draw(tex, new Rectangle(pos.X, pos.Y, size.X, size.Y), Color.Gold);
+            if(btns.ContainsKey(selecteditem))
+            {
+                XY pos = btns[selecteditem].pos;
+                XY size = btns[selecteditem].size;
+                sb.Draw(tex, new Rectangle(pos.X, pos.Y, size.X, size.Y), Color.Gold);
+            }
         }
     }
 }

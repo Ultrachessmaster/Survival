@@ -21,6 +21,7 @@ namespace Simulation
             this.area = area;
             tag = "Plant";
             SetHealth();
+            GetDescription = GenerateDescription;
             Timer t = new Timer(Action, 1f, enabled);
         }
 
@@ -36,14 +37,13 @@ namespace Simulation
             {
                 enabled = new RefWrapper<bool>(false);
             }
-            GenerateDescription();
         }
 
-        void GenerateDescription ()
+        string GenerateDescription ()
         {
             StringBuilder sb = new StringBuilder("---Plant---\n");
             sb.AppendLine("Health: " + health + " / " + maxhealth);
-            description = sb.ToString();
+            return sb.ToString();
         }
 
         void Action(float timelost)

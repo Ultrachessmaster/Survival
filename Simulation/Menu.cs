@@ -24,10 +24,8 @@ namespace Simulation
             XY pos = new XY(2, screenheight - 2 - size.Y);
             XY offset = new XY(2 * Simulation.tilesize, 0);
             tools.Add(new Button(size, pos, SetTool, (int)Tool.Hoe, (int)Tool.Hoe));
-            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.Grab, (int)Tool.Grab));
-            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.PlantSeed, (int)Tool.PlantSeed));
+            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.Shovel, (int)Tool.Shovel));
             tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.Pickaxe, (int)Tool.Pickaxe));
-            tools.Add(new Button(size, pos += offset, SetTool, (int)Tool.Nothing, (int)Tool.Nothing));
             this.screenheight = screenheight;
             tex = Simulation.CM.Load<Texture2D>("toolmap");
             selectionbox = Simulation.CM.Load<Texture2D>("selection");
@@ -66,6 +64,7 @@ namespace Simulation
         void SetTool(int i)
         {
             tool = (Tool)i;
+            Inventory.selecteditem = ItemType.NONE;
         }
     }
 }

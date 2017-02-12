@@ -1,0 +1,10 @@
+﻿TODO:
+V - Autograb
+V - Make Crops Entities
+V - Use Items OR Tools
+V - Iron
+V - Copper
+Machines
+Water Machine
+Oxygen Machine
+Make Plants

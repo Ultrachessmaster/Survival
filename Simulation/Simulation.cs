@@ -18,7 +18,6 @@ namespace Simulation
         public Area area;
         Interaction interaction;
         TimeCycle timecycle = new TimeCycle();
-        Crops crops;
         ColonistManager colm;
         public static List<Timer> Timers = new List<Timer>();
         public static int tilesize = 8;
@@ -38,8 +37,6 @@ namespace Simulation
         public static GraphicsDevice GD { get; internal set; }
 
         public static int seed = (int)DateTime.Now.Ticks;
-
-        XY previousmousepos;
 
         public Simulation()
         {
@@ -69,8 +66,6 @@ namespace Simulation
 
             var size = new Vector3(512, 512, 2);
             area = Generation.Generate(size);
-            
-            crops = new Crops(area);
             colm = new ColonistManager(area);
         }
 
@@ -134,33 +129,19 @@ namespace Simulation
 
         public void SimUpd (GameTime gameTime)
         {
-            crops.Upd();
-            
             timecycle.Update();
             for (int i = 0; i < Timers.Count; i++)
             {
                 var tim = Timers[i];
                 tim.CheckTime();
             }
-            int col = 0;
-            for (int i = area.entities.Count - 1; i >= 0; i--)
-            {
-                var ent = area.entities[i];
-                if (ent.Update != null && ent.enabled.Value)
-                    ent.Update.Invoke(gameTime);
-                else if (!ent.enabled.Value)
-                {
-                    area.entities.RemoveAt(i);
-                }
-                if (ent.Tag == "Colonist")
-                    col++;
-            }
-            Colonist.numcolonists = col;
-            if(col == 0)
-            {
-                //Exit();
-            }
             colm.Update();
+            area.Update(gameTime);
+            //if(col == 0)
+            //{
+            //    Exit();
+            //}
+            
 
         }
 
@@ -173,7 +154,7 @@ namespace Simulation
             GraphicsDevice.Clear(Color.Black);
             var dm = GraphicsDevice.DisplayMode;
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.NonPremultiplied);
-            int[,,] tilemap = Area.tiles;
+            Tile[,,] tilemap = Area.tiles;
             var scale = 2.5f;
             var alpha = ((float)Math.Sin( 2 * (TimeCycle.TotalHours / 24f)*Math.PI - (Math.PI / 2)) / scale) + 1 - (1f/scale);
             Color darkness = new Color(255, 255, 255, alpha);
@@ -191,7 +172,7 @@ namespace Simulation
                     //{
                         Rectangle destrect = new Rectangle((x * tilesize - Camera.X) * pxlratio, (y * tilesize - Camera.Y) * pxlratio, tilesize * pxlratio, tilesize * pxlratio);
 
-                        int xsource = ((tilemap[x, y, currentlayer]) % (tileatlas.Width / tilesize)) * tilesize;
+                        int xsource = ((int)tilemap[x, y, currentlayer] % (tileatlas.Width / tilesize)) * tilesize;
                         int ysource = (int)Math.Floor((decimal)(tilemap[x, y, currentlayer]) / (tileatlas.Width / tilesize)) * tilesize;
 
                         Rectangle sourcerect = new Rectangle(xsource, ysource, tilesize, tilesize);
@@ -199,41 +180,9 @@ namespace Simulation
                     //}
                 }
             }
-            for (int i = 0; i < area.entities.Count; i++)
-            {
-                Entity e = area.entities[i];
-                if(e.enabled.Value)
-                {
-                    int texwidth = 0;
-                    int texheight = 0;
-                    switch (e.tex)
-                    {
-                        case TextureAtlas.SPRITES:
-                            texwidth = spriteatlas.Width;
-                            texheight = spriteatlas.Height;
-                            break;
-                        case TextureAtlas.ANIMALS:
-                            texwidth = animalatlas.Width;
-                            texheight = animalatlas.Height;
-                            break;
 
-                    }
-                    int xsource = (e.Sprite % (texwidth / tilesize)) * tilesize;
-                    int ysource = (int)Math.Floor((decimal)(e.Sprite) / (texheight / tilesize)) * tilesize;
+            area.Draw(spriteBatch, pxlratio, tilesize, spriteatlas, animalatlas, Color.White);
 
-                    Rectangle sourcerect = new Rectangle(xsource, ysource, tilesize, tilesize);
-                    switch (e.tex)
-                    {
-                        case TextureAtlas.SPRITES:
-                            e.Draw.Invoke(spriteBatch, pxlratio, spriteatlas, sourcerect, Color.White);
-                            break;
-                        case TextureAtlas.ANIMALS:
-                            e.Draw.Invoke(spriteBatch, pxlratio, animalatlas, sourcerect, Color.White);
-                            break;
-
-                    }
-                }
-            }
             var colonist = colm.SelectedColonist;
             if(colonist != null)
             {
@@ -244,10 +193,9 @@ namespace Simulation
 
             spriteBatch.DrawString(font, "Time: " + TimeCycle.Hours + ":" + (TimeCycle.Minutes - (TimeCycle.Hours * 60)), Vector2.Zero, Color.White);
             spriteBatch.DrawString(font, "Time Scale: " + updatesperframe, new Vector2(0, 20f), Color.White);
-            spriteBatch.DrawString(font, "Colonists: " + Colonist.numcolonists, new Vector2(0, 40f), Color.White);
 
             spriteBatch.Draw(textbox, new Rectangle(0, windowsize - (tilesize * 16), windowsize, tilesize * 16), Color.White);
-            var ent = EntityHighlight.CurrentEntity(area.entities);
+            var ent = CurrentEntity(area);
             if(ent != null)
             {
                 spriteBatch.DrawString(font, ent.Description, new Vector2(308, windowsize - (tilesize * 16) + 1), Color.White);
@@ -268,7 +216,7 @@ namespace Simulation
             for (int i = 0; i < Inventory.craftinglist.Count; i++)
             {
                 var it = Inventory.craftinglist[i];
-                spriteBatch.DrawString(font, it.ToString(), new Vector2(Inventory.xpos + 155, Inventory.ypos + i * 18), Color.White);
+                spriteBatch.DrawString(font, it.ToString(), new Vector2(Inventory.xpos + Inventory.craftingoffset, Inventory.ypos + i * 18), Color.White);
             }
 
             interaction.Draw(spriteBatch);
@@ -280,6 +228,22 @@ namespace Simulation
 
             base.Draw(gameTime);
         }
+
+        public Entity CurrentEntity(Area area)
+        {
+            var state = Mouse.GetState();
+            XY camerapos = new XY();
+            camerapos.X = state.X / Simulation.pxlratio;
+            camerapos.Y = state.Y / Simulation.pxlratio;
+            camerapos.X += Camera.X;
+            camerapos.Y += Camera.Y;
+            camerapos.X /= Simulation.tilesize;
+            camerapos.Y /= Simulation.tilesize;
+
+            var entity = area.GetEntity(camerapos);
+            return entity;
+        }
+
         public static void Pause(float time)
         {
             inst.IsFixedTimeStep = true;
@@ -287,7 +251,11 @@ namespace Simulation
         }
         public static void AddEntity (Entity e)
         {
-            inst.area.entities.Add(e);
+            inst.area.AddEntity(e);
+        }
+        public static void RemoveEntity(Entity e)
+        {
+            inst.area.RemoveEntity(e);
         }
     }
 }

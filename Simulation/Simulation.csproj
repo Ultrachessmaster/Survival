@@ -79,14 +79,12 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Colonist.cs" />
     <Compile Include="ColonistManager.cs" />
-    <Compile Include="Crops.cs" />
-    <Compile Include="EntityHighlight.cs" />
+    <Compile Include="Crop.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Generation\OpenSimplexNoise.cs" />
     <Compile Include="Plant.cs" />
     <Compile Include="Tools\RefWrapper.cs" />
-    <Compile Include="Tile.cs" />
     <Compile Include="TimeCycle.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Generation\Generation.cs" />
@@ -109,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />

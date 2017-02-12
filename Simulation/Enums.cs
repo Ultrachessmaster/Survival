@@ -22,13 +22,11 @@ namespace Simulation
     }
     public enum GoalType
     {
-        HARVESTSEEDS,
-        HARVESTCROPS,
         TILLGROUND,
-        PLANTSEEDS,
         SHOVEL,
         MINE,
-        ITEM
+        ITEM,
+        GOAL
     }
     public enum AnimalType
     {
@@ -37,21 +35,43 @@ namespace Simulation
     }
     public enum ItemType
     {
-        SEEDS,
-        STONE,
-        STONEBUCKET,
-        WATERBUCKET,
         CROPS,
-        NONE
+        HOE = 0,
+        SHOVEL = 1,
+        PICKAXE = 2,
+        SEEDS = 4,
+        STONE = 5,
+        STONEBUCKET = 6,
+        WATERBUCKET = 7,
+        IRON = 8,
+        COPPER = 9,
+        NONE = 10
     }
     public enum Tool
     {
         Hoe = 0,
-        Grab = 1,
-        Walk = 2,
-        PlantSeed = 3,
-        Shovel = 4,
-        Pickaxe = 5,
-        Nothing = 8
+        Shovel = 1,
+        Pickaxe = 2,
+        None = 1000000
     }
+    public enum Tile
+    {
+        TilledLand = 1,
+        Seed = 2,
+        Crop = 3,
+        Water = 4,
+        PlasticWall = 5,
+        PlasticFloor = 6,
+        PlasticDoor = 7,
+        Snow = 8,
+        Stone = 9,
+        Iron = 10,
+        Copper = 11,
+        Vegetation = 12,
+        Slime = 13,
+        Sand = 14,
+        River = 15,
+        Trunk = 16,
+        Dirt = 17
+}
 }

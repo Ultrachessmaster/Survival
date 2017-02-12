@@ -23,9 +23,9 @@ namespace Simulation
             
         }
 
-        public void Dr(SpriteBatch sb, int pxlratio, Texture2D tex, Rectangle sourcerec, Color color)
+        public void Dr(SpriteBatch sb, int pxlratio, int tilesize, Texture2D spriteatlas, Texture2D animalatlas, Color color)
         {
-            Drw(sb, pxlratio, tex, sourcerec, col);
+            Drw(sb, pxlratio, tilesize, spriteatlas, animalatlas, col);
         }
 
         public void Upd (float ot)

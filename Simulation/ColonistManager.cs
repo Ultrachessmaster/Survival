@@ -11,7 +11,7 @@ namespace Simulation
 {
     class ColonistManager
     {
-        List<Colonist> colonists = new List<Colonist>();
+        public static List<Colonist> colonists = new List<Colonist>();
         public Colonist SelectedColonist { get { return selectedcol; } }
         Colonist selectedcol;
         Area area;
@@ -33,9 +33,12 @@ namespace Simulation
                 selectedcol = null;
                 foreach(Colonist c in colonists)
                 {
+                    c.selected = false;
                     if(c.pos.Equals(new XY(xtile, ytile)))
                     {
                         selectedcol = c;
+                        c.goals.Clear();
+                        c.selected = true;
                         break;
                     }
                 }
@@ -55,19 +58,13 @@ namespace Simulation
                     case Tool.Hoe:
                         g.goaltype = GoalType.TILLGROUND;
                         break;
-                    case Tool.Grab:
-                        if(Area.tiles[xtile, ytile, 0] == Tile.Crop)
-                            g.goaltype = GoalType.HARVESTCROPS;
-                        else
-                            g.goaltype = GoalType.HARVESTSEEDS;
-                        break;
-                    case Tool.PlantSeed:
-                        g.goaltype = GoalType.PLANTSEEDS;
-                        break;
                     case Tool.Pickaxe:
                         g.goaltype = GoalType.MINE;
                         break;
-                    case Tool.Nothing:
+                    case Tool.Shovel:
+                        g.goaltype = GoalType.SHOVEL;
+                        break;
+                    case Tool.None:
                         g.goaltype = GoalType.ITEM;
                         break;
                 }
@@ -78,13 +75,12 @@ namespace Simulation
         void GetColonists()
         {
             Area area = Simulation.inst.area;
-            var ent = area.entities;
-            foreach(Entity e in ent)
-            {
-                var c = e as Colonist;
-                if (c != null)
-                    colonists.Add(c);
-            }
+            var ents = area.GetEntities("Colonist");
+        }
+
+        public static int NumColonists()
+        {
+            return colonists.Count;
         }
 
         public void Draw(SpriteBatch sb, Texture2D tex)

@@ -37,3 +37,7 @@ C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Priority Queue.pdb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\toolmap.xnb
 C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\selection.xnb
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Newtonsoft.Json.dll
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Newtonsoft.Json.xml
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\craftingrecipes.json
+C:\Users\oldro\Programming Projects\Simulation\Simulation\bin\Windows\x86\Debug\Content\itemmap.xnb

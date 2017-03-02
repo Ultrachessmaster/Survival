@@ -7,4 +7,26 @@ V - Copper
 Machines
 Water Machine
 Oxygen Machine
-Make Plants
+V - Make Plants
+Make Medusa
+Make trap
+Make rope
+Make vines
+Make bear
+Make tin
+Make titanium
+Finish crafting system
+Make furnace
+Make placeable walls
+Make placeable doors
+Make placeable floors
+Make combat
+Make colonists sleep at night
+Make strange creatures (dangerous) come out at night
+Make underground
+Make Iron Golem
+Make Caverns
+Make colonists have names
+Make mountain towards north
+Make mysterious temples
+Make lava pits

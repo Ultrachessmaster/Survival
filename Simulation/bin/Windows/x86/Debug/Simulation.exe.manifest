@@ -67,6 +67,18 @@
     </dependentAssembly>
   </dependency>
   <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Newtonsoft.Json.dll" size="526336">
+      <assemblyIdentity name="Newtonsoft.Json" version="9.0.0.0" publicKeyToken="30AD4FE6B2A6AEED" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>V14w+Y5OpCyeUW7ci7sprYtQsXOj5rNrW6OeEzzOlAY=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Priority Queue.dll" size="22016">
       <assemblyIdentity name="Priority Queue" version="4.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
@@ -187,14 +199,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Simulation.exe" size="207840">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Simulation.exe" size="213472">
       <assemblyIdentity name="Simulation" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>mz3suL6E0t0+6o/PGPfb+3qC9eVC25anbF8CNeTW/to=</dsig:DigestValue>
+        <dsig:DigestValue>wiRLAEVEVAZTLvGl43cS7/NPtNIUBIPY1DiaD9JwRLQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -204,7 +216,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>QtZx92+el/kJYtXF47ohsNBiHRt3TjXaYu4e34dGdL4=</dsig:DigestValue>
+      <dsig:DigestValue>tkXkFehHAk4t4Vs1KvKyvm/X0ar2xCEPUQ34quvNTeQ=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\Font.xnb" size="21524">
@@ -214,6 +226,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>vJT8nHAMAtiQ0u0Q25QshkDQgs9sfMXjrcMsH4jA5no=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\itemmap.xnb" size="4181">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>UPSOfHRC7ArRUcnNvC0Co8qW1BSMdE+LcuIjhAwCh6g=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\selection.xnb" size="341">
@@ -249,7 +270,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>o0uw73QI7qYbGVL2o2HbGdOjZd+MxzYBabEgrA9B6Vw=</dsig:DigestValue>
+      <dsig:DigestValue>K0kdZisZYKG1YDkGLQCpUW5KUlUnwWSFBNM4rYA1HNs=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\toolmap.xnb" size="4181">
@@ -258,7 +279,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>aD+xfzsJ3yJVzIHUy5FMEWolawujTQOOMNciH6iwsrE=</dsig:DigestValue>
+      <dsig:DigestValue>zUj4NCKVuwIq/FSazgAyn+qt3Dt5qn1URaiXNIHxn3E=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Icon.ico" size="147541">
@@ -270,13 +291,13 @@
       <dsig:DigestValue>w3hsUaqrnLNyB0YuBPTNsy43j2WodZ9/DHeQN0YJwQA=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="TODO.txt" size="147">
+  <file name="TODO.txt" size="583">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>qfylLrdrZbHRYQ/c1gmehRnUwWBDpuS+Vg35FJJsAJQ=</dsig:DigestValue>
+      <dsig:DigestValue>E6t5phvgkKTDQx/BYVhGbdSbN4qdffPUneQKAuJZFN8=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

@@ -48,6 +48,10 @@ namespace Simulation
                             map[x, y] = Tile.Iron;
                         if (r.Range(0f, 1f) < 0.01)
                             map[x, y] = Tile.Copper;
+                        if (r.Range(0f, 1f) < 0.015)
+                            map[x, y] = Tile.Coal;
+                        if (r.Range(0f, 1f) < 0.03)
+                            map[x, y] = Tile.Tin;
                     }
                     if (scaledheight <= dirtbiome && height > vegetation)
                     {
@@ -80,8 +84,8 @@ namespace Simulation
             }
 
             Area.tiles = fullmap;
-            area.AddRangeE(GenerateAnimals(fullmap));
-            area.AddRangeE(GeneratePlants(fullmap, area));
+            Area.AddRangeE(GenerateAnimals(fullmap, area));
+            Area.AddRangeE(GeneratePlants(fullmap, area));
             return area;
             
         }
@@ -111,23 +115,23 @@ namespace Simulation
                             {
                                 for (int yb = y; yb < y + 8; yb++)
                                 {
-                                    map[xb, yb] = Tile.PlasticWall;
+                                    map[xb, yb] = Tile.TinWall;
                                 }
                             }
                             for (int xb = x + xoffset + 1; xb < x + +xoffset + 6; xb++)
                             {
                                 for (int yb = y + 3; yb < y + 7; yb++)
                                 {
-                                    map[xb, yb] = Tile.PlasticFloor;
+                                    map[xb, yb] = Tile.TinFloor;
                                 }
                             }
-                            map[x + xoffset + 3, y] = Tile.PlasticDoor;
-                            map[x + xoffset + 3, y + 1] = Tile.PlasticFloor;
-                            map[x + xoffset + 3, y + 2] = Tile.PlasticFloor;
+                            map[x + xoffset + 3, y] = Tile.TinDoor;
+                            map[x + xoffset + 3, y + 1] = Tile.TinFloor;
+                            map[x + xoffset + 3, y + 2] = Tile.TinFloor;
                             XY home = new XY(x + xoffset + 3, (y + 3));
-                            area.AddEntity(new Colonist(home, area));
-                            area.AddEntity(new Colonist(new XY((x + xoffset + 1), (y + 3)), area));
-                            area.AddEntity(new Colonist(new XY((x + xoffset + 5), (y + 3)), area));
+                            Area.AddEntity(new Colonist(home, area));
+                            Area.AddEntity(new Colonist(new XY((x + xoffset + 1), (y + 3)), area));
+                            Area.AddEntity(new Colonist(new XY((x + xoffset + 5), (y + 3)), area));
                             Colonist.home = home;
                             Camera.X = (x + xoffset - 10) * Simulation.tilesize;
                             Camera.Y = (y - 10) * Simulation.tilesize;
@@ -138,14 +142,12 @@ namespace Simulation
             }
         }
 
-        static List<Entity> GenerateAnimals(Tile[,,] map)
+        static List<Entity> GenerateAnimals(Tile[,,] map, Area area)
         {
             List<Entity> ent = new List<Entity>();
 
             Color c = new Color(r.Range(0f, 1f), r.Range(0f, 1f), r.Range(0f, 1f));
             int sprite = r.Next(0, 4);
-
-            AnimalTemplate at = new AnimalTemplate(c, sprite);
 
             for (int x = 0; x < map.GetUpperBound(0) + 1; x++)
             {
@@ -153,13 +155,18 @@ namespace Simulation
                 {
                     
                     float choice = r.Range(0f, 1f);
-                    bool notwall = map[x, y, 0] != Tile.PlasticWall;
-                    bool notfloor = map[x, y, 0] != Tile.PlasticFloor;
-                    bool notdoor = map[x, y, 0] != Tile.PlasticDoor;
-                    if (choice < 0.0007 && notwall && notfloor && notdoor)
+                    bool notwall = map[x, y, 0] != Tile.TinWall;
+                    bool notfloor = map[x, y, 0] != Tile.TinFloor;
+                    bool notdoor = map[x, y, 0] != Tile.TinDoor;
+                    bool notwater = map[x, y, 0] != Tile.Water;
+                    if (choice < 0.00025 && notwall && notfloor && notdoor && notwater)
+                        ent.Add(new Vulpes(new XY(x, y), area));
+                    else if (notwall && notfloor && notdoor && notwater)
                     {
-                        ent.Add(at.Create(new XY(x, y)));
+                        if (r.Range(0f, 1f) < 0.00095)
+                            ent.Add(new Orycto(new XY(x, y)));
                     }
+
                 }
             }
             
@@ -176,13 +183,13 @@ namespace Simulation
                 {
 
                     float choice = r.Range(0f, 1f);
-                    bool notwall = map[x, y, 0] != Tile.PlasticWall;
-                    bool notfloor = map[x, y, 0] != Tile.PlasticFloor;
-                    bool notdoor = map[x, y, 0] != Tile.PlasticDoor;
+                    bool notwall = map[x, y, 0] != Tile.TinWall;
+                    bool notfloor = map[x, y, 0] != Tile.TinFloor;
+                    bool notdoor = map[x, y, 0] != Tile.TinDoor;
                     bool vegetation = map[x, y, 0] == Tile.Vegetation;
                     if (choice < 0.005 && notwall && notfloor && notdoor && vegetation)
                     {
-                        ent.Add(new Plant(new XY(x, y), area));
+                        ent.Add(new Plant(new XY(x, y)));
                     }
                 }
             }

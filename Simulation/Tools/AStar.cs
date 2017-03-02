@@ -40,10 +40,10 @@ namespace Simulation
             Assert.IsTrue(pos.Y <= map.GetUpperBound(1));
         }
 
-        public XY[] CalculatePath()
+        public List<XY> CalculatePath()
         {
             if (pos.pos.Equals(dest.pos))
-                return new XY[0];
+                return new List<XY>();
             FastPriorityQueue<Node> frontier = new FastPriorityQueue<Node>((map.GetUpperBound(0) + 1) * (map.GetUpperBound(1) + 1));
             List<Node> beenthere = new List<Node>();
             frontier.Enqueue(pos, 0);
@@ -72,7 +72,10 @@ namespace Simulation
                     {
                         var b = beenthere[bf];
                         if (b.pos.Equals(next.pos))
+                        {
                             partofbeenthere = true;
+                            break;
+                        }
                     }
                     if (!partofbeenthere || cost < current.cost)
                     {
@@ -86,8 +89,6 @@ namespace Simulation
                         }
                     }
                 }
-                if (i > 250)
-                    return null;
             }
 
             Node n = dest;
@@ -98,8 +99,8 @@ namespace Simulation
                 n = n.parent;
             }
             path.Reverse();
-
-            return path.ToArray();
+            Assert.IsTrue(path.Count != 0);
+            return path;
         }
 
         private int ManhattanDistance(Node node, Node goal)
@@ -109,7 +110,7 @@ namespace Simulation
 
         private Node[] Neighbors(bool[,] map, Node n)
         {
-            List<Node> neighbors = new List<Node>();
+            Node[] neighbors = new Node[4];
             int[,] offsets = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
             for(int i = 0; i < 4; i++)
             {
@@ -117,10 +118,10 @@ namespace Simulation
                 if (p.X >= 0 && p.Y >= 0 && p.X < map.GetUpperBound(0) + 1 && p.Y < map.GetUpperBound(1) + 1)
                 {
                     bool walkable = map[p.X, p.Y];
-                    neighbors.Add(new Node(p, walkable));
+                    neighbors[i] = new Node(p, walkable);
                 }
             }
-            return neighbors.ToArray();
+            return neighbors;
         }
     }
 

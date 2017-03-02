@@ -9,33 +9,35 @@ namespace Simulation
 {
     class Plant : Entity
     {
-        public float health = 24 * 10f;
-        public const float maxhealth = 24 * 10f;
-        Area area;
-        public Plant(XY pos, Area area)
+        public float health = 24 * 3f;
+        public const float maxhealth = 24 * 3f;
+        public Plant(XY pos)
         {
             this.pos = pos;
             draw = Drw;
             update = Upd;
             Sprite = 4;
-            this.area = area;
             tag = "Plant";
-            SetHealth();
+            float scale = 1 - Area.EntitiesSurrounding(pos.X, pos.Y, 0, "Plant") / 8f;
+            health = scale * maxhealth;
             GetDescription = GenerateDescription;
             Timer t = new Timer(Action, 1f, enabled);
-        }
-
-        void SetHealth()
-        {
-            float scale = 1 - area.EntitiesSurrounding(pos.X, pos.Y, 0, "Plant") / 8f;
-            health = scale * maxhealth;
         }
 
         void Upd (GameTime gt)
         {
             if(health <= 0)
             {
-                enabled = new RefWrapper<bool>(false);
+                enabled.Value = false;
+                Random r = new Random();
+                for(int i = 0; i < 3; i++)
+                {
+                    var dir = new XY(r.Next(-5, 6), r.Next(-5, 6));
+                    if (Area.CanWalk(pos + dir, 0))
+                    {
+                        Area.AddEntity(new Plant(pos + dir));
+                    }
+                }
             }
         }
 
@@ -48,7 +50,7 @@ namespace Simulation
 
         void Action(float timelost)
         {
-            health--;
+            health -= 4;
             Timer t = new Timer(Action, 1f, enabled);
         }
 

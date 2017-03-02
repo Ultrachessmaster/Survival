@@ -37,7 +37,7 @@ namespace Simulation
                     if(c.pos.Equals(new XY(xtile, ytile)))
                     {
                         selectedcol = c;
-                        c.goals.Clear();
+                        c.ClearGoals();
                         c.selected = true;
                         break;
                     }
@@ -75,7 +75,9 @@ namespace Simulation
         void GetColonists()
         {
             Area area = Simulation.inst.area;
-            var ents = area.GetEntities("Colonist");
+            var ents = Area.GetEntities("Colonist");
+            foreach (Entity e in ents)
+                colonists.Add((Colonist)e);
         }
 
         public static int NumColonists()

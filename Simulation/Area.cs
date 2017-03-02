@@ -11,8 +11,7 @@ namespace Simulation
     public class Area
     {
         public static Tile[,,] tiles;
-        private List<Entity> entities = new List<Entity>();
-        private List<Entity> closeentities = new List<Entity>();
+        static private List<Entity> entities = new List<Entity>();
 
         public void SetMap(Tile[,,] t)
         {
@@ -29,24 +28,17 @@ namespace Simulation
                 {
                     entities.RemoveAt(i);
                 }
-                for(int j = 0; j < ColonistManager.NumColonists(); j++)
-                {
-                    var colon = ColonistManager.colonists[i];
-                    var dist = XY.Distance(colon.pos, ent.pos);
-                    if (dist < Colonist.longestdist)
-                        closeentities.Add(ent);
-                }
             }
         }
-        public void Draw(SpriteBatch sb, int pxlratio, int tilesize, Texture2D spriteatlas, Texture2D animalatlas, Color color)
+        public void Draw(SpriteBatch sb, int pxlratio, int tilesize, Texture2D[] atlas, Color color)
         {
             for (int i = 0; i < entities.Count; i++)
             {
                 var ent = entities[i];
-                ent.Draw(sb, pxlratio, tilesize, spriteatlas, animalatlas, color);
+                ent.Draw(sb, pxlratio, tilesize, atlas, color);
             }
         }
-        public int TilesSurrounding(int x, int y, int z, Tile type)
+        public static int TilesSurrounding(int x, int y, int z, Tile type)
         {
             int count = 0;
             for (int i = x - 1; i < x + 2; i++)
@@ -65,28 +57,39 @@ namespace Simulation
             }
             return count;
         }
-        public int EntitiesSurrounding(int x, int y, int z, string tag)
+        public static int EntitiesSurrounding(int x, int y, int z, string tag)
         {
             int count = 0;
-            foreach (Entity e in entities)
+            for(int i = 0; i < entities.Count; i++)
             {
-                bool correcttype = (e.Tag == tag);
+                var e = entities[i];
+                if (e.Tag != tag)
+                    continue;
                 bool correctx = (x <= e.pos.X + 1 && x >= e.pos.X - 1);
                 bool correcty = (y <= e.pos.Y + 1 && y >= e.pos.Y - 1);
-                if (correcttype && correctx && correcty)
+                if (correctx && correcty)
                     count++;
             }
             return count;
         }
 
-        public Entity GetEntity(XY pos, string tag)
+        public static bool CanWalk(XY pos, int layer)
         {
-            for (int i = 0; i < closeentities.Count; i++)
-            {
-                var e = closeentities[i];
-                if (e.pos.Equals(pos) && e.Tag == tag)
-                    return e;
-            }
+            if (pos.X >= tiles.GetUpperBound(0) || pos.Y >= tiles.GetUpperBound(1) || pos.X < 0 || pos.Y < 0 || layer >= tiles.GetUpperBound(2) || layer < 0)
+                return false;
+            bool notwater = tiles[pos.X, pos.Y, layer] != Tile.Water;
+            bool notwall = tiles[pos.X, pos.Y, layer] != Tile.TinWall;
+            bool notriver = tiles[pos.X, pos.Y, layer] != Tile.River;
+            bool notstone = tiles[pos.X, pos.Y, layer] != Tile.Stone;
+            bool notiron = tiles[pos.X, pos.Y, layer] != Tile.Iron;
+            bool notcopper = tiles[pos.X, pos.Y, layer] != Tile.Copper;
+            bool notcoal = tiles[pos.X, pos.Y, layer] != Tile.Coal;
+            bool nottin = tiles[pos.X, pos.Y, layer] != Tile.Tin;
+            return notwater && notriver && notwall && notstone && notiron && notcopper && notcoal && nottin;
+        }
+
+        public static Entity GetEntity(XY pos, string tag)
+        {
             for (int i = 0; i < entities.Count; i++)
             {
                 var e = entities[i];
@@ -96,7 +99,7 @@ namespace Simulation
             return null;
         }
 
-        public Entity GetEntity(XY pos)
+        public static Entity GetEntity(XY pos)
         {
             for (int i = 0; i < entities.Count; i++)
             {
@@ -109,7 +112,7 @@ namespace Simulation
             return null;
         }
 
-        public List<Entity> GetEntities (string tag)
+        public static List<Entity> GetEntities (string tag)
         {
             var ents = new List<Entity>();
             for(int i = 0; i < entities.Count; i++)
@@ -119,15 +122,27 @@ namespace Simulation
             }
             return ents;
         }
-        public void AddEntity(Entity e)
+
+        public static List<Entity> GetEntities<T>()
+        {
+            var ents = new List<Entity>();
+            for (int i = 0; i < entities.Count; i++)
+            {
+                if (entities[i] is T)
+                    ents.Add(entities[i]);
+            }
+            return ents;
+        }
+
+        public static void AddEntity(Entity e)
         {
             entities.Add(e);
         }
-        public void RemoveEntity(Entity e)
+        public static void RemoveEntity(Entity e)
         {
             entities.Remove(e);
         }
-        public void AddRangeE(List<Entity> e)
+        public static void AddRangeE(List<Entity> e)
         {
             entities.AddRange(e);
         }

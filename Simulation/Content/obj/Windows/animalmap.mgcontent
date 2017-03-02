@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SourceFile>C:/Users/oldro/Programming Projects/Simulation/Simulation/Content/animalmap.png</SourceFile>
-  <SourceTime>2017-01-02T21:53:40.0634375-07:00</SourceTime>
+  <SourceTime>2017-02-26T21:23:12.3440958-07:00</SourceTime>
   <DestFile>C:/Users/oldro/Programming Projects/Simulation/Simulation/Content/bin/Windows/animalmap.xnb</DestFile>
-  <DestTime>2017-01-02T21:53:45.9491284-07:00</DestTime>
+  <DestTime>2017-03-01T17:53:23.808202-07:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2016-03-30T00:36:08-06:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.IO;
+using Newtonsoft.Json.Schema;
 
 namespace Simulation
 {
@@ -12,29 +12,66 @@ namespace Simulation
     {
         public static Dictionary<ItemType, int> items = new Dictionary<ItemType, int>();
         public static List<ItemType> craftinglist = new List<ItemType>();
-        static List<ItemType> bucketrecipe = new List<ItemType>();
+        static List<Recipe> recipes = new List<Recipe>();
         static Dictionary<ItemType, Button> btns = new Dictionary<ItemType, Button>();
         public const int xpos = 540;
         public const int ypos = 833;
         public const int craftingoffset = 155;
-        public static ItemType selecteditem = ItemType.NONE;
+        public static ItemType selecteditem = ItemType.None;
 
-        public static void Craft(int j)
+        public static void LoadCraftingRecipes()
         {
-            bucketrecipe = new List<ItemType>();
-            bucketrecipe.Add(ItemType.STONE);
-            bucketrecipe.Add(ItemType.STONE);
-            bucketrecipe.Add(ItemType.STONE);
-
-            if (bucketrecipe.Count != craftinglist.Count)
-                return;
-            for(int i = 0; i <  craftinglist.Count; i++)
+            string recipetext = File.ReadAllText("craftingrecipes.json");
+            JsonTextReader jtr = new JsonTextReader(new StringReader(recipetext));
+            List<string> tokens = new List<string>();
+            while(jtr.Read())
             {
-                if (bucketrecipe[i] != craftinglist[i])
-                    return;
+                if(jtr.Value != null)
+                {
+                    tokens.Add(jtr.Value.ToString());
+                }
             }
-            AddItem(ItemType.STONEBUCKET);
-            craftinglist = new List<ItemType>();
+            string craftingtype = tokens[0];
+            bool itemlist = false;
+            recipes.Add(new Recipe());
+            for(int i = 1; i < tokens.Count; i++)
+            {
+                if (tokens[i] == "Product")
+                {
+                    itemlist = false;
+                    recipes[recipes.Count - 1].product = (ItemType)int.Parse(tokens[i + 1]);
+                    i += 2;
+                    if (i > tokens.Count - 1)
+                        break;
+                    recipes.Add(new Recipe());
+                    
+                }
+                if(itemlist)
+                    recipes[recipes.Count - 1].items.Add((ItemType)int.Parse(tokens[i]));
+                if (tokens[i] == "Items")
+                    itemlist = true;
+            }
+        }
+
+        public static void Craft(int ignore)
+        {
+            foreach(Recipe r in recipes)
+            {
+                bool isrecipe = true;
+                if (r.items.Count != craftinglist.Count)
+                    continue;
+                for(int i = 0; i < r.items.Count; i++)
+                {
+                    if(r.items[i] != craftinglist[i])
+                        isrecipe = false;
+                }
+                if (isrecipe)
+                {
+                    AddItem(r.product);
+                    craftinglist.Clear();
+                    return;
+                }
+            }
         }
 
         static public void AddItem(ItemType item)
@@ -122,7 +159,7 @@ namespace Simulation
 
         public static void Draw(SpriteBatch sb, Texture2D tex)
         {
-            if (selecteditem == ItemType.NONE)
+            if (selecteditem == ItemType.None)
                 return;
             if(btns.ContainsKey(selecteditem))
             {

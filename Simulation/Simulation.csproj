@@ -67,12 +67,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Button.cs" />
+    <Compile Include="Furnace.cs" />
+    <Compile Include="Orycto.cs" />
     <Compile Include="Goal.cs" />
+    <Compile Include="IAnimal.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="Recipe.cs" />
     <Compile Include="Tools\AccessOnce.cs" />
-    <Compile Include="Animal.cs" />
-    <Compile Include="AnimalTemplate.cs" />
+    <Compile Include="Vulpes.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="Area.cs" />
     <Compile Include="Tools\AStar.cs" />
@@ -102,6 +105,10 @@
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -113,6 +120,10 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="craftingrecipes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
     <None Include="Simulation_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +146,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties craftingrecipes_1json__JSONSchema="http://json.schemastore.org/templatesources" />
+    </VisualStudio>
+  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

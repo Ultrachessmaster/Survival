@@ -36,50 +36,24 @@ namespace Simulation
         public Action<GameTime> Update { get { return update; } }
         protected Action<GameTime> update;
 
-        public Action<SpriteBatch, int, int, Texture2D, Texture2D, Color> Draw { get { return draw; } }
-        protected Action<SpriteBatch, int, int, Texture2D, Texture2D, Color> draw;
+        public Action<SpriteBatch, int, int, Texture2D[], Color> Draw { get { return draw; } }
+        protected Action<SpriteBatch, int, int, Texture2D[], Color> draw;
 
-        protected void Drw (SpriteBatch sb, int pxlratio, int tilesize, Texture2D spriteatlas, Texture2D animalatlas, Color col)
+        protected void Drw (SpriteBatch sb, int pxlratio, int tilesize, Texture2D[] atlas, Color col)
         {
             if (enabled.Value)
             {
-                int texwidth = 0;
-                int texheight = 0;
-                switch (tex)
-                {
-                    case TextureAtlas.SPRITES:
-                        texwidth = spriteatlas.Width;
-                        texheight = spriteatlas.Height;
-                        break;
-                    case TextureAtlas.ANIMALS:
-                        texwidth = animalatlas.Width;
-                        texheight = animalatlas.Height;
-                        break;
-
-                }
-                int xsource = (Sprite % (texwidth / tilesize)) * tilesize;
-                int ysource = (int)Math.Floor((decimal)(Sprite) / (texheight / tilesize)) * tilesize;
+                int id = (int)tex;
+                int xsource = (Sprite % (atlas[id].Width / tilesize)) * tilesize;
+                int ysource = (int)Math.Floor((decimal)(Sprite) / (atlas[id].Height / tilesize)) * tilesize;
 
                 Rectangle sourcerect = new Rectangle(xsource, ysource, tilesize, tilesize);
 
                 if (visible)
                 {
-                    switch (tex)
-                    {
-                        case TextureAtlas.SPRITES:
-                            sb.Draw(spriteatlas, new Rectangle((pos.X * Simulation.tilesize - Camera.X) * pxlratio, (pos.Y * Simulation.tilesize - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerect, col);
-                            break;
-                        case TextureAtlas.ANIMALS:
-                            sb.Draw(animalatlas, new Rectangle((pos.X * Simulation.tilesize - Camera.X) * pxlratio, (pos.Y * Simulation.tilesize - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerect, col);
-                            break;
-
-                    }
-                }
-                    
-                
-                    
+                    sb.Draw(atlas[id], new Rectangle((pos.X * Simulation.tilesize - Camera.X) * pxlratio, (pos.Y * Simulation.tilesize - Camera.Y) * pxlratio, width * pxlratio, height * pxlratio), sourcerect, col);
+                }   
             }
-            
         }
     }
 }

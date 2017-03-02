@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SourceFile>C:/Users/oldro/Programming Projects/Simulation/Simulation/Content/spritemap.png</SourceFile>
-  <SourceTime>2017-02-09T18:44:47.3425789-07:00</SourceTime>
+  <SourceTime>2017-03-01T17:41:28.0920932-07:00</SourceTime>
   <DestFile>C:/Users/oldro/Programming Projects/Simulation/Simulation/Content/bin/Windows/spritemap.xnb</DestFile>
-  <DestTime>2017-02-09T18:44:50.9104546-07:00</DestTime>
+  <DestTime>2017-03-01T17:53:22.9308681-07:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2016-03-30T00:36:08-06:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

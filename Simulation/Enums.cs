@@ -17,8 +17,9 @@ namespace Simulation
     public enum TextureAtlas
     {
         SPRITES,
-        TILES,
-        ANIMALS
+        ANIMALS,
+        ITEMS,
+        TILES
     }
     public enum GoalType
     {
@@ -35,17 +36,21 @@ namespace Simulation
     }
     public enum ItemType
     {
-        CROPS,
-        HOE = 0,
-        SHOVEL = 1,
-        PICKAXE = 2,
-        SEEDS = 4,
-        STONE = 5,
-        STONEBUCKET = 6,
-        WATERBUCKET = 7,
-        IRON = 8,
-        COPPER = 9,
-        NONE = 10
+        Crop,
+        Hoe,
+        Shovel,
+        Pickaxe,
+        Seed,
+        Stone,
+        Stone_Bucket,
+        Water_Bucket,
+        Iron_Ore,
+        Copper_Ore,
+        Furnace,
+        Tin_Ore,
+        Coal,
+        Tin_Door,
+        None
     }
     public enum Tool
     {
@@ -60,9 +65,9 @@ namespace Simulation
         Seed = 2,
         Crop = 3,
         Water = 4,
-        PlasticWall = 5,
-        PlasticFloor = 6,
-        PlasticDoor = 7,
+        TinWall = 5,
+        TinFloor = 6,
+        TinDoor = 7,
         Snow = 8,
         Stone = 9,
         Iron = 10,
@@ -72,6 +77,8 @@ namespace Simulation
         Sand = 14,
         River = 15,
         Trunk = 16,
-        Dirt = 17
-}
+        Dirt = 17,
+        Coal = 18,
+        Tin = 19
+    }
 }

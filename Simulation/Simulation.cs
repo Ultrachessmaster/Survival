@@ -29,6 +29,7 @@ namespace Simulation
         private Texture2D tileatlas;
         private Texture2D spriteatlas;
         private Texture2D animalatlas;
+        private Texture2D itematlas;
         private Texture2D textbox;
         private Texture2D selectionbox;
         public static Simulation inst;
@@ -52,68 +53,45 @@ namespace Simulation
             
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             IsMouseVisible = true;
             base.Initialize();
 
             var size = new Vector3(512, 512, 2);
             area = Generation.Generate(size);
             colm = new ColonistManager(area);
+            Inventory.LoadCraftingRecipes();
         }
-
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
+        
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             tileatlas = Content.Load<Texture2D>("texturemap");
             spriteatlas = Content.Load<Texture2D>("spritemap");
             animalatlas = Content.Load<Texture2D>("animalmap");
+            itematlas = Content.Load<Texture2D>("itemmap");
             textbox = Content.Load<Texture2D>("textbox");
             selectionbox = Content.Load<Texture2D>("selection");
             font = Content.Load<SpriteFont>("Font");
 
             GD = GraphicsDevice;
             interaction = new Interaction(windowsize);
-            // TODO: use this.Content to load your game content here
         }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
+        
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //    Exit();
             var state = Mouse.GetState();
             if (Input.IsKeyPressed(Keys.I))
                 updatesperframe++;
             if (Input.IsKeyPressed(Keys.K))
                 updatesperframe--;
-            updatesperframe = Math.Max(updatesperframe, 1);
+            updatesperframe = Math.Max(updatesperframe, 0);
             updatesperframe = Math.Min(updatesperframe, 10);
             initscrollwheel = state.ScrollWheelValue;
             for(int i = 0; i < updatesperframe; i++)
@@ -144,11 +122,7 @@ namespace Simulation
             
 
         }
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
@@ -180,8 +154,8 @@ namespace Simulation
                     //}
                 }
             }
-
-            area.Draw(spriteBatch, pxlratio, tilesize, spriteatlas, animalatlas, Color.White);
+            Texture2D[] atlas = { spriteatlas, animalatlas, itematlas };
+            area.Draw(spriteBatch, pxlratio, tilesize, atlas, Color.White);
 
             var colonist = colm.SelectedColonist;
             if(colonist != null)
@@ -206,17 +180,18 @@ namespace Simulation
             var amounts = new List<int>(Inventory.items.Values);
             for (int i = 0; i < Inventory.items.Count; i++)
             {
-                if(amounts[i] == 1)
-                    spriteBatch.DrawString(font, items[i].ToString(), new Vector2(Inventory.xpos, Inventory.ypos + i * 18), Color.White);
+                if (amounts[i] == 1)
+                    spriteBatch.DrawString(font, items[i].ToString().Replace('_', ' '), new Vector2(Inventory.xpos, Inventory.ypos + i * 18), Color.White);
                 else
-                    spriteBatch.DrawString(font, items[i] + " x " + amounts[i], new Vector2(Inventory.xpos, Inventory.ypos + i * 18), Color.White);
+                    spriteBatch.DrawString(font, (items[i] + " x " + amounts[i]).Replace('_', ' '), new Vector2(Inventory.xpos, Inventory.ypos + i * 18), Color.White);
             }
                 
 
             for (int i = 0; i < Inventory.craftinglist.Count; i++)
             {
                 var it = Inventory.craftinglist[i];
-                spriteBatch.DrawString(font, it.ToString(), new Vector2(Inventory.xpos + Inventory.craftingoffset, Inventory.ypos + i * 18), Color.White);
+                var item = it.ToString().Replace('_', ' ');
+                spriteBatch.DrawString(font, item, new Vector2(Inventory.xpos + Inventory.craftingoffset, Inventory.ypos + i * 18), Color.White);
             }
 
             interaction.Draw(spriteBatch);
@@ -240,7 +215,7 @@ namespace Simulation
             camerapos.X /= Simulation.tilesize;
             camerapos.Y /= Simulation.tilesize;
 
-            var entity = area.GetEntity(camerapos);
+            var entity = Area.GetEntity(camerapos);
             return entity;
         }
 
@@ -248,14 +223,6 @@ namespace Simulation
         {
             inst.IsFixedTimeStep = true;
             inst.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(time * 1000));
-        }
-        public static void AddEntity (Entity e)
-        {
-            inst.area.AddEntity(e);
-        }
-        public static void RemoveEntity(Entity e)
-        {
-            inst.area.RemoveEntity(e);
         }
     }
 }

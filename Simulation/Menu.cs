@@ -64,7 +64,7 @@ namespace Simulation
         void SetTool(int i)
         {
             tool = (Tool)i;
-            Inventory.selecteditem = ItemType.NONE;
+            Inventory.selecteditem = ItemType.None;
         }
     }
 }

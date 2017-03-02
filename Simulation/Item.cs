@@ -6,38 +6,27 @@ using System.Threading.Tasks;
 
 namespace Simulation
 {
-    /*public class Item
+    public class Item : Entity
     {
-        public ItemType ItemT { get { return itemt; } }
-        ItemType itemt;
-        public string Name { get { return name; } }
-        string name;
-        public bool Placeable { get { return placeable; } }
-        bool placeable;
-
-        public Item (ItemType itemtype)
+        public ItemType itemtype;
+        public bool burnable;
+        public Item(XY pos, ItemType it)
         {
-            itemt = itemtype;
-            switch (itemt)
+            this.pos = pos;
+            tag = "Item";
+            draw = Drw;
+            Sprite = (int)it;
+            tex = TextureAtlas.ITEMS;
+            itemtype = it;
+            switch(it)
             {
-                case ItemType.SEEDS:
-                    name = "Seed";
-                    placeable = false;
+                case ItemType.Coal:
+                    burnable = true;
                     break;
-                case ItemType.STONE:
-                    name = "Stone";
-                    placeable = false;
+                case ItemType.Crop:
+                    burnable = true;
                     break;
             }
         }
-
-        public void Use (XY pos)
-        {
-            switch (itemt)
-            {
-                case ItemType.SEEDS:
-                    break;
-            }
-        } 
-    }*/
+    }
 }

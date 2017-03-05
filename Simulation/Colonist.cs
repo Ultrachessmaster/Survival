@@ -126,26 +126,29 @@ namespace Simulation
                 FollowPath();
             else
             {
-                Entity e = Area.GetEntity(goal.destination);
-                if (e != null)
+                var ents = Area.GetEntities(goal.destination);
+                foreach(Entity e in ents)
                 {
-                    if (e.Tag == "Plant")
+                    if (e != null)
                     {
-                        Inventory.AddItem(ItemType.Seed);
-                        Area.RemoveEntity(e);
-                    }
-                    if (e.Tag == "Crop" && e.Sprite == 3)
-                    {
-                        Inventory.AddItem(ItemType.Crop);
-                        Inventory.AddItem(ItemType.Seed);
-                        Inventory.AddItem(ItemType.Seed);
-                        Area.RemoveEntity(e);
-                    }
-                    if (e.Tag == "Item")
-                    {
-                        var item = (e as Item);
-                        Inventory.AddItem(item.itemtype);
-                        Area.RemoveEntity(e);
+                        if (e.Tag == "Plant")
+                        {
+                            Inventory.AddItem(ItemType.Seed);
+                            Area.RemoveEntity(e);
+                        }
+                        if (e.Tag == "Crop" && e.Sprite == 3)
+                        {
+                            Inventory.AddItem(ItemType.Crop);
+                            Inventory.AddItem(ItemType.Seed);
+                            Inventory.AddItem(ItemType.Seed);
+                            Area.RemoveEntity(e);
+                        }
+                        if (e.Tag == "Item")
+                        {
+                            var item = (e as Item);
+                            Inventory.AddItem(item.itemtype);
+                            Area.RemoveEntity(e);
+                        }
                     }
                 }
                 switch (goal.goaltype)
@@ -174,9 +177,9 @@ namespace Simulation
                                 Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.Dirt;
                                 Inventory.AddItem(ItemType.Coal);
                                 break;
-                            case Tile.Tin:
+                            case Tile.Platinum:
                                 Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.Dirt;
-                                Inventory.AddItem(ItemType.Tin_Ore);
+                                Inventory.AddItem(ItemType.Platinum_Ore);
                                 break;
                         }
                         goals.RemoveAt(0);
@@ -216,6 +219,10 @@ namespace Simulation
                                 Inventory.RemoveItem(ItemType.Furnace);
                                 Area.AddEntity(new Furnace(goal.destination));
                                 break;
+                            case ItemType.Platinum_Wall:
+                                Inventory.RemoveItem(ItemType.Platinum_Wall);
+                                Area.tiles[goal.destination.X, goal.destination.Y, 0] = Tile.PlatinumWall;
+                                break;
                             case ItemType.None:
                                 break;
                             default:
@@ -244,7 +251,18 @@ namespace Simulation
             var dest = goals.First().destination;
             if (pos.Equals(dest))
                 return;
-            if(walkmap == null)
+            bool leftfree = Area.CanWalk(dest + new XY(-1, 0), 0);
+            bool rightfree = Area.CanWalk(dest + new XY(1, 0), 0);
+            bool upfree = Area.CanWalk(dest + new XY(0, -1), 0);
+            bool downfree = Area.CanWalk(dest + new XY(0, 1), 0);
+            if(!(leftfree || rightfree || upfree || downfree))
+            {
+                goals.RemoveAt(0);
+                walkmap = null;
+                path = null;
+                return;
+            }
+            if (walkmap == null)
             {
                 int xlower = pos.X - longestdist;
                 int ylower = pos.Y - longestdist;
@@ -269,6 +287,7 @@ namespace Simulation
                 origin = pos;
                 if (path == null)
                 {
+                    walkmap = null;
                     goals.RemoveAt(0);
                     return;
                 }
@@ -293,7 +312,7 @@ namespace Simulation
             Area area = Simulation.inst.area;
             XY dir = (dest - pos);
             Tile tile = Area.tiles[(pos + dir).X, (pos + dir).Y, 0];
-            if (tile != Tile.Water && tile != Tile.TinWall && tile != Tile.River && dir != XY.Zero)
+            if (tile != Tile.Water && tile != Tile.PlatinumWall && tile != Tile.River && dir != XY.Zero)
                 TakeMove(dir);
             else throw new Exception("Colonist did not move.");
         }

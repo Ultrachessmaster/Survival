@@ -21,8 +21,33 @@
     {
       "Items": "11",
       "Product": "12"
+    },
+    {
+      "Items": [
+        "5",
+        "14"
+      ],
+      "Product": "13"
     }
 
+  ],
+
+  "furnacerecipes": [
+    {
+      //Platinum_Ore -> Platinum_Bar
+      "Item": "11",
+      "Product": "14"
+    },
+    {
+      //Iron_Ore -> Iron_Bar
+      "Item": "8",
+      "Product": "15"
+    },
+    {
+      //Copper_Bar -> Copper_Bar
+      "Item": "9",
+      "Product": "16"
+    }
   ]
   
 }

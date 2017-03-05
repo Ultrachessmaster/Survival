@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace Simulation
 {
-    class Recipe
+    public class InventoryRecipe
     {
         public List<ItemType> items = new List<ItemType>();
+        public ItemType product;
+    }
+    public class FurnaceRecipe
+    {
+        public ItemType cookingitem;
         public ItemType product;
     }
 }

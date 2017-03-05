@@ -47,9 +47,12 @@ namespace Simulation
         Iron_Ore,
         Copper_Ore,
         Furnace,
-        Tin_Ore,
+        Platinum_Ore,
         Coal,
-        Tin_Door,
+        Platinum_Wall,
+        Platinum_Bar,
+        Iron_Bar,
+        Copper_Bar,
         None
     }
     public enum Tool
@@ -61,24 +64,25 @@ namespace Simulation
     }
     public enum Tile
     {
-        TilledLand = 1,
-        Seed = 2,
-        Crop = 3,
-        Water = 4,
-        TinWall = 5,
-        TinFloor = 6,
-        TinDoor = 7,
-        Snow = 8,
-        Stone = 9,
-        Iron = 10,
-        Copper = 11,
-        Vegetation = 12,
-        Slime = 13,
-        Sand = 14,
-        River = 15,
-        Trunk = 16,
-        Dirt = 17,
-        Coal = 18,
-        Tin = 19
+        None = 0,
+        TilledLand,
+        Seed,
+        Crop,
+        Water,
+        PlatinumWall,
+        PlatinumFloor,
+        PlatinumDoor,
+        Snow,
+        Stone,
+        Iron,
+        Copper,
+        Vegetation,
+        Slime,
+        Sand,
+        River,
+        Trunk,
+        Dirt,
+        Coal,
+        Platinum
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,27 +9,41 @@ namespace Simulation
 {
     class Furnace : Entity
     {
-        ItemType fuel = ItemType.None;
         public Furnace(XY pos)
         {
             draw = Drw;
+            Timer t = new Timer(Upd, 0.001f, enabled);
             tag = "Furnace";
             this.pos = pos;
             tex = TextureAtlas.ITEMS;
             Sprite = (int)ItemType.Furnace;
         }
 
-        public void Upd()
+        public void Upd(float ot)
         {
             var items = Area.GetEntities("Item");
+            Item fuel = null;
+            Item cookingitem = null;
             foreach(Item it in items)
             {
-                if (it.burnable && it.pos == pos + new XY(-1, 0))
+                if (it.burnable && it.pos == pos + new XY(0, -1))
+                    fuel = it;
+                if (it.pos == pos + new XY(-1, 0))
+                    cookingitem = it;
+            }
+            if (fuel != null && cookingitem != null)
+            {
+                foreach(FurnaceRecipe fr in Inventory.furnacerecipes)
                 {
-                    Area.RemoveEntity(it);
-                    fuel = it.itemtype;
+                    if(fr.cookingitem == cookingitem.itemtype)
+                    {
+                        Area.AddEntity(new Item(pos + new XY(1, 0), fr.product));
+                        Area.RemoveEntity(fuel);
+                        Area.RemoveEntity(cookingitem);
+                    }
                 }
             }
+            Timer t = new Timer(Upd, 0.001f, enabled);
         }
     }
 }

@@ -78,13 +78,13 @@ namespace Simulation
             if (pos.X >= tiles.GetUpperBound(0) || pos.Y >= tiles.GetUpperBound(1) || pos.X < 0 || pos.Y < 0 || layer >= tiles.GetUpperBound(2) || layer < 0)
                 return false;
             bool notwater = tiles[pos.X, pos.Y, layer] != Tile.Water;
-            bool notwall = tiles[pos.X, pos.Y, layer] != Tile.TinWall;
+            bool notwall = tiles[pos.X, pos.Y, layer] != Tile.PlatinumWall;
             bool notriver = tiles[pos.X, pos.Y, layer] != Tile.River;
             bool notstone = tiles[pos.X, pos.Y, layer] != Tile.Stone;
             bool notiron = tiles[pos.X, pos.Y, layer] != Tile.Iron;
             bool notcopper = tiles[pos.X, pos.Y, layer] != Tile.Copper;
             bool notcoal = tiles[pos.X, pos.Y, layer] != Tile.Coal;
-            bool nottin = tiles[pos.X, pos.Y, layer] != Tile.Tin;
+            bool nottin = tiles[pos.X, pos.Y, layer] != Tile.Platinum;
             return notwater && notriver && notwall && notstone && notiron && notcopper && notcoal && nottin;
         }
 
@@ -118,6 +118,17 @@ namespace Simulation
             for(int i = 0; i < entities.Count; i++)
             {
                 if (entities[i].Tag == tag)
+                    ents.Add(entities[i]);
+            }
+            return ents;
+        }
+
+        public static List<Entity> GetEntities(XY pos)
+        {
+            var ents = new List<Entity>();
+            for (int i = 0; i < entities.Count; i++)
+            {
+                if (entities[i].pos == pos)
                     ents.Add(entities[i]);
             }
             return ents;

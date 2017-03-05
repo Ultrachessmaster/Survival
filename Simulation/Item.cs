@@ -9,7 +9,7 @@ namespace Simulation
     public class Item : Entity
     {
         public ItemType itemtype;
-        public bool burnable;
+        public bool burnable = false;
         public Item(XY pos, ItemType it)
         {
             this.pos = pos;

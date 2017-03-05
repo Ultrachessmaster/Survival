@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Simulation
 {
@@ -12,7 +13,8 @@ namespace Simulation
     {
         public static Dictionary<ItemType, int> items = new Dictionary<ItemType, int>();
         public static List<ItemType> craftinglist = new List<ItemType>();
-        static List<Recipe> recipes = new List<Recipe>();
+        static List<InventoryRecipe> inventoryrecipes = new List<InventoryRecipe>();
+        public static List<FurnaceRecipe> furnacerecipes = new List<FurnaceRecipe>();
         static Dictionary<ItemType, Button> btns = new Dictionary<ItemType, Button>();
         public const int xpos = 540;
         public const int ypos = 833;
@@ -22,40 +24,35 @@ namespace Simulation
         public static void LoadCraftingRecipes()
         {
             string recipetext = File.ReadAllText("craftingrecipes.json");
-            JsonTextReader jtr = new JsonTextReader(new StringReader(recipetext));
-            List<string> tokens = new List<string>();
-            while(jtr.Read())
+            JObject jo = JObject.Parse(recipetext);
+            var invrecipes = jo.First.First;
+            var furnrecipes = jo.Last.First;
+            foreach(JToken recipe in invrecipes.Children())
             {
-                if(jtr.Value != null)
+                InventoryRecipe r = new InventoryRecipe();
+                r.product = (ItemType)recipe.Last.First.Value<int>();
+                var itemids = recipe.First.Children().Values<int>();
+                List<ItemType> its = new List<ItemType>();
+                foreach(int itemid in itemids)
                 {
-                    tokens.Add(jtr.Value.ToString());
+                    its.Add((ItemType)itemid);
                 }
+                r.items = its;
+                inventoryrecipes.Add(r);
             }
-            string craftingtype = tokens[0];
-            bool itemlist = false;
-            recipes.Add(new Recipe());
-            for(int i = 1; i < tokens.Count; i++)
+            foreach(JToken recipe in furnrecipes.Children())
             {
-                if (tokens[i] == "Product")
-                {
-                    itemlist = false;
-                    recipes[recipes.Count - 1].product = (ItemType)int.Parse(tokens[i + 1]);
-                    i += 2;
-                    if (i > tokens.Count - 1)
-                        break;
-                    recipes.Add(new Recipe());
-                    
-                }
-                if(itemlist)
-                    recipes[recipes.Count - 1].items.Add((ItemType)int.Parse(tokens[i]));
-                if (tokens[i] == "Items")
-                    itemlist = true;
+                FurnaceRecipe fr = new FurnaceRecipe();
+                fr.cookingitem = (ItemType)recipe.First.First.Value<int>();
+                fr.product = (ItemType)recipe.Last.First.Value<int>();
+                furnacerecipes.Add(fr);
             }
+
         }
 
         public static void Craft(int ignore)
         {
-            foreach(Recipe r in recipes)
+            foreach(InventoryRecipe r in inventoryrecipes)
             {
                 bool isrecipe = true;
                 if (r.items.Count != craftinglist.Count)
